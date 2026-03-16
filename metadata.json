@@ -1,0 +1,5 @@
+{
+  "name": "SubNest - AI Real Estate Co-Pilot",
+  "description": "24/7 AI Real Estate Co-Pilot for agents and broker teams. Stop chasing dead ends and start closing high-intent buyers.",
+  "requestFramePermissions": ["microphone"]
+}
