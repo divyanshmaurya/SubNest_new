@@ -11,7 +11,7 @@ dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const CONTACT_EMAIL = "subnest.ai@gmail.com";
+const DEFAULT_CONTACT_EMAIL = "subnest.ai@gmail.com";
 
 const db = new Database("leads.db");
 
@@ -53,10 +53,97 @@ function createMailer() {
   });
 }
 
+type LeadNotification = {
+  name: string;
+  email: string;
+  rawChat: unknown[];
+};
+
+type LeadNotifier = {
+  sendInterestedLeadEmail: (notification: LeadNotification) => Promise<void>;
+};
+
+function getContactEmail() {
+  return process.env.NOTIFICATION_EMAIL_TO || DEFAULT_CONTACT_EMAIL;
+}
+
+function createResendNotifier(): LeadNotifier | null {
+  const apiKey = process.env.RESEND_API_KEY;
+  const from = process.env.EMAIL_FROM;
+
+  if (!apiKey || !from) {
+    return null;
+  }
+
+  return {
+    async sendInterestedLeadEmail({ name, email, rawChat }) {
+      const response = await fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          from,
+          to: [getContactEmail()],
+          reply_to: email,
+          subject: `New interested SubNest lead: ${name}`,
+          text: [
+            "A website visitor shared their contact details with the SubNest chatbot.",
+            "",
+            `Name: ${name}`,
+            `Email: ${email}`,
+            "",
+            "Conversation transcript:",
+            JSON.stringify(rawChat || [], null, 2),
+          ].join("\n"),
+        }),
+      });
+
+      if (!response.ok) {
+        const errorBody = await response.text();
+        throw new Error(`Resend API error (${response.status}): ${errorBody}`);
+      }
+    },
+  };
+}
+
+function createSmtpNotifier(): LeadNotifier | null {
+  const mailer = createMailer();
+
+  if (!mailer) {
+    return null;
+  }
+
+  return {
+    async sendInterestedLeadEmail({ name, email, rawChat }) {
+      await mailer.sendMail({
+        from: process.env.SMTP_FROM || process.env.SMTP_USER,
+        to: getContactEmail(),
+        replyTo: email,
+        subject: `New interested SubNest lead: ${name}`,
+        text: [
+          "A website visitor shared their contact details with the SubNest chatbot.",
+          "",
+          `Name: ${name}`,
+          `Email: ${email}`,
+          "",
+          "Conversation transcript:",
+          JSON.stringify(rawChat || [], null, 2),
+        ].join("\n"),
+      });
+    },
+  };
+}
+
+function createLeadNotifier(): LeadNotifier | null {
+  return createResendNotifier() || createSmtpNotifier();
+}
+
 async function startServer() {
   const app = express();
   const PORT = 3000;
-  const mailer = createMailer();
+  const notifier = createLeadNotifier();
 
   app.use(express.json());
 
@@ -94,26 +181,16 @@ async function startServer() {
 
       const result = stmt.run(name, email, 85, "Interested", JSON.stringify(raw_chat || []));
 
-      if (!mailer) {
-        console.warn("SMTP is not configured. Interested lead saved locally only.");
+      if (!notifier) {
+        console.warn("Email notifications are not configured. Interested lead saved locally only.");
         res.status(202).json({ success: true, id: result.lastInsertRowid, emailed: false });
         return;
       }
 
-      await mailer.sendMail({
-        from: process.env.SMTP_FROM || process.env.SMTP_USER,
-        to: CONTACT_EMAIL,
-        replyTo: email,
-        subject: `New interested SubNest lead: ${name}`,
-        text: [
-          "A website visitor shared their contact details with the SubNest chatbot.",
-          "",
-          `Name: ${name}`,
-          `Email: ${email}`,
-          "",
-          "Conversation transcript:",
-          JSON.stringify(raw_chat || [], null, 2),
-        ].join("\n"),
+      await notifier.sendInterestedLeadEmail({
+        name,
+        email,
+        rawChat: raw_chat || [],
       });
 
       res.json({ success: true, id: result.lastInsertRowid, emailed: true });
