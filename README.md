@@ -7,7 +7,7 @@ The chatbot can:
 - detect interested visitors
 - ask for the visitor's name and email
 - save leads locally
-- email interested lead details to `contact@subnest.ai` when SMTP is configured
+- email interested lead details to `subnest.ai@gmail.com` when SMTP is configured
 
 ## Prerequisites
 
@@ -88,7 +88,7 @@ When the chatbot detects that a visitor is genuinely interested, it:
 
 1. asks for the visitor's name and email
 2. stores the lead in the local SQLite database
-3. attempts to send an email notification to `contact@subnest.ai`
+3. attempts to send an email notification to `subnest.ai@gmail.com`
 
 If SMTP is not configured correctly:
 - the lead is still saved locally in `leads.db`
@@ -103,7 +103,7 @@ If SMTP is not configured correctly:
 5. Provide a name and email when prompted
 6. Confirm:
    - the lead appears in `leads.db`
-   - the email reaches `contact@subnest.ai`
+   - the email reaches `subnest.ai@gmail.com`
 
 ## Update Chatbot Content
 
