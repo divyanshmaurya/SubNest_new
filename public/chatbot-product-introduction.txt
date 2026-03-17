@@ -9,6 +9,11 @@ SubNest is not just a chatbot for another company's website. We provide our own 
 
 The AI assistant helps visitors discover relevant properties, answers listing questions, collects contact details, qualifies serious leads, and routes strong opportunities to the right agent or team.
 
+Live Demo Websites
+
+- Skyline Demo: https://skyline1-ten.vercel.app/
+- Estate Pro Demo: https://estate-pro-kappa.vercel.app/
+
 How SubNest Works
 
 1. List
@@ -35,7 +40,7 @@ Multilingual Conversations
 The AI assistant can support users in different languages and make the experience more accessible to international clients.
 
 Lead Qualification
-SubNest gathers useful details such as budget, location preferences, property type, and timeline so teams can focus on serious prospects.
+SubNest gathers useful details such as name, email, phone number, budget, location preferences, property type, and timeline so teams can focus on serious prospects.
 
 Why SubNest?
 
@@ -58,6 +63,9 @@ Contact
 To learn more or request your AI assistant:
 Email: subnest.ai@gmail.com
 Demo link: https://calendly.com/contact-subnest/online-subnest-ai-assistant-for-real-estate_demo
+Website demos:
+- https://skyline1-ten.vercel.app/
+- https://estate-pro-kappa.vercel.app/
 
 SubNest
 List smarter. Respond faster. Close better.

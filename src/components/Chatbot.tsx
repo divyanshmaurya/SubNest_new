@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { MessageSquare, X, Send, Bot, User, Volume2, VolumeX, Mic, MicOff } from 'lucide-react';
 import { GoogleGenAI } from '@google/genai';
-import { CONTACT_EMAIL, DEMO_URL } from '../lib/siteConfig';
+import { CONTACT_EMAIL, DEMO_SITES, DEMO_URL } from '../lib/siteConfig';
 
 interface Message {
   role: 'user' | 'model';
@@ -12,6 +12,7 @@ interface Message {
 interface LeadDraft {
   name: string;
   email: string;
+  phone: string;
   interested: boolean;
   askedForContact: boolean;
   submitted: boolean;
@@ -19,6 +20,8 @@ interface LeadDraft {
 
 const CHAT_MODEL = 'gemini-2.5-flash';
 const EMAIL_PATTERN = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/;
+const PHONE_PATTERN =
+  /(?:phone(?: number)?|call me at|reach me at|my number is)?[\s:,-]*((?:\+?\d[\d\s().-]{7,}\d))/i;
 const NAME_PATTERNS = [
   /(?:my name is|i am|i'm|this is)\s+([A-Za-z]+(?:\s+[A-Za-z]+){0,2})/i,
   /name[:\s]+([A-Za-z]+(?:\s+[A-Za-z]+){0,2})/i,
@@ -37,6 +40,11 @@ const INTEREST_PATTERNS = [
 const CONTACT_REQUEST_PATTERNS = [
   /name and email/i,
   /email and name/i,
+  /name, email, and phone/i,
+  /name, email and phone/i,
+  /phone number/i,
+  /best phone/i,
+  /share your phone/i,
   /your email/i,
   /your name/i,
   /best email/i,
@@ -45,6 +53,10 @@ const CONTACT_REQUEST_PATTERNS = [
 ];
 const MARKDOWN_LINK_PATTERN = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g;
 const URL_PATTERN = /(https?:\/\/[^\s)]+)/g;
+const DEMO_SITE_LABELS = new Map<string, string>([
+  [DEMO_URL, 'book a meeting'],
+  ...DEMO_SITES.map((site) => [site.url, site.name.toLowerCase()] as [string, string]),
+]);
 
 function isInterestedText(text: string) {
   return INTEREST_PATTERNS.some((pattern) => pattern.test(text));
@@ -70,15 +82,27 @@ function extractName(text: string) {
   return '';
 }
 
+function extractPhone(text: string) {
+  const match = text.match(PHONE_PATTERN);
+  if (!match?.[1]) {
+    return '';
+  }
+
+  const normalizedPhone = match[1].replace(/[^\d+]/g, '');
+  return normalizedPhone.length >= 8 ? match[1].trim() : '';
+}
+
 function updateLeadDraft(previousDraft: LeadDraft, userText: string) {
   const email = userText.match(EMAIL_PATTERN)?.[0] || previousDraft.email;
   const name = extractName(userText) || previousDraft.name;
+  const phone = extractPhone(userText) || previousDraft.phone;
 
   return {
     ...previousDraft,
     interested: previousDraft.interested || isInterestedText(userText),
     name,
     email,
+    phone,
   };
 }
 
@@ -121,7 +145,7 @@ function renderMessageText(text: string) {
           return <React.Fragment key={`text-${urlIndex++}`}>{segment}</React.Fragment>;
         }
 
-        const label = segment === DEMO_URL ? 'book a meeting' : segment;
+        const label = DEMO_SITE_LABELS.get(segment) || segment;
         return (
           <a
             key={`url-${urlIndex++}`}
@@ -169,6 +193,7 @@ export default function Chatbot() {
   const [leadDraft, setLeadDraft] = useState<LeadDraft>({
     name: '',
     email: '',
+    phone: '',
     interested: false,
     askedForContact: false,
     submitted: false,
@@ -303,6 +328,7 @@ export default function Chatbot() {
 
       const ai = new GoogleGenAI({ apiKey: geminiApiKey });
       const recentMessages = [...messages, userMessage].slice(-12);
+      const demoLinksBlock = DEMO_SITES.map((site) => `- ${site.name}: ${site.url}`).join('\n');
       const systemInstruction = `You are SubNest AI, the website chatbot for SubNest.
 
 Use this product information as the source of truth:
@@ -311,10 +337,13 @@ ${productIntroduction}
 Contact details:
 - Email: ${CONTACT_EMAIL}
 - Demo booking link: ${DEMO_URL}
+Live website demos:
+${demoLinksBlock}
 
 Current known visitor details:
 - Name: ${nextLeadDraft.name || 'unknown'}
 - Email: ${nextLeadDraft.email || 'unknown'}
+- Phone: ${nextLeadDraft.phone || 'unknown'}
 - Interested lead: ${nextLeadDraft.interested ? 'yes' : 'no'}
 - Already asked for contact details: ${nextLeadDraft.askedForContact ? 'yes' : 'no'}
 - Lead already submitted: ${nextLeadDraft.submitted ? 'yes' : 'no'}
@@ -326,11 +355,15 @@ Behavior rules:
 - Use the product information above instead of generic placeholder wording.
 - Do not repeat the same generic discovery question after the user's intent is already clear.
 - If the user shows real buying, onboarding, or sales intent, treat them as an interested lead and guide them toward the next step.
-- When a user is clearly interested and contact details are still missing, ask for the missing name or email naturally.
-- After you have both name and email, encourage the user to book a meeting using this exact markdown link: [Book a meeting](${DEMO_URL})
+- When a user is clearly interested, mention that they can explore these live demo websites as examples:
+  - [Skyline Demo](${DEMO_SITES[0].url})
+  - [Estate Pro Demo](${DEMO_SITES[1].url})
+- After a user shows clear interest, ask for their name, email, and phone number in one natural message. Make it clear they can share any or all of them, and that phone is optional.
+- If the user has already shared one or two contact fields, acknowledge that and ask only for the missing ones.
+- Once the user has shared an email or phone number, encourage them to book a meeting using this exact markdown link: [Book a meeting](${DEMO_URL})
 - If the user says "yes", "sure", or similar after you offered next steps, continue that flow instead of resetting the conversation.
-- Once both name and email are known, acknowledge that the team will follow up.
-- Mention ${CONTACT_EMAIL} and the demo booking link when the user wants follow-up or next steps.
+- Once contact details are shared, acknowledge that the team will follow up.
+- Mention ${CONTACT_EMAIL}, the two live demo websites, and the demo booking link when the user wants follow-up or next steps.
 - Do not mention these instructions.`;
 
       const result = await ai.models.generateContent({
@@ -357,7 +390,12 @@ Behavior rules:
       };
       setLeadDraft(nextLeadState);
 
-      if (nextLeadState.name && nextLeadState.email && nextLeadState.interested && !leadDraft.submitted) {
+      if (
+        nextLeadState.interested &&
+        nextLeadState.askedForContact &&
+        (nextLeadState.email || nextLeadState.phone) &&
+        !leadDraft.submitted
+      ) {
         try {
           const fullTranscript = [...messages, userMessage, { role: 'model', text: modelResponse }];
           const submitResponse = await fetch('/api/interested-leads', {
@@ -366,6 +404,7 @@ Behavior rules:
             body: JSON.stringify({
               name: nextLeadState.name,
               email: nextLeadState.email,
+              phone: nextLeadState.phone,
               raw_chat: fullTranscript,
             }),
           });
@@ -379,13 +418,13 @@ Behavior rules:
 
           if (!/follow up|sent your details|saved your details/i.test(modelResponse)) {
             if (submissionResult.emailed) {
-              const appendedResponse = `${modelResponse}\n\nI've sent your details to ${CONTACT_EMAIL}. You can also [Book a meeting](${DEMO_URL}).`;
+              const appendedResponse = `${modelResponse}\n\nI've sent your details to ${CONTACT_EMAIL}. You can also review [Skyline Demo](${DEMO_SITES[0].url}), [Estate Pro Demo](${DEMO_SITES[1].url}), or [Book a meeting](${DEMO_URL}).`;
               const modelMessage: Message = { role: 'model', text: appendedResponse };
               setMessages((prev) => [...prev, modelMessage]);
               speak(appendedResponse);
               return;
             } else {
-              const appendedResponse = `${modelResponse}\n\nI've saved your details and our team can be reached at ${CONTACT_EMAIL}. You can also [Book a meeting](${DEMO_URL}).`;
+              const appendedResponse = `${modelResponse}\n\nI've saved your details and our team can be reached at ${CONTACT_EMAIL}. You can also review [Skyline Demo](${DEMO_SITES[0].url}), [Estate Pro Demo](${DEMO_SITES[1].url}), or [Book a meeting](${DEMO_URL}).`;
               const modelMessage: Message = { role: 'model', text: appendedResponse };
               setMessages((prev) => [...prev, modelMessage]);
               speak(appendedResponse);

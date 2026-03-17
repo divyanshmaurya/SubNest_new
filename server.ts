@@ -56,6 +56,7 @@ function createMailer() {
 type LeadNotification = {
   name: string;
   email: string;
+  phone: string;
   rawChat: unknown[];
 };
 
@@ -76,7 +77,7 @@ function createResendNotifier(): LeadNotifier | null {
   }
 
   return {
-    async sendInterestedLeadEmail({ name, email, rawChat }) {
+    async sendInterestedLeadEmail({ name, email, phone, rawChat }) {
       const response = await fetch("https://api.resend.com/emails", {
         method: "POST",
         headers: {
@@ -86,13 +87,14 @@ function createResendNotifier(): LeadNotifier | null {
         body: JSON.stringify({
           from,
           to: [getContactEmail()],
-          reply_to: email,
-          subject: `New interested SubNest lead: ${name}`,
+          reply_to: email || undefined,
+          subject: `New interested SubNest lead: ${name || email || phone}`,
           text: [
             "A website visitor shared their contact details with the SubNest chatbot.",
             "",
-            `Name: ${name}`,
-            `Email: ${email}`,
+            `Name: ${name || "Not provided"}`,
+            `Email: ${email || "Not provided"}`,
+            `Phone: ${phone || "Not provided"}`,
             "",
             "Conversation transcript:",
             JSON.stringify(rawChat || [], null, 2),
@@ -116,17 +118,18 @@ function createSmtpNotifier(): LeadNotifier | null {
   }
 
   return {
-    async sendInterestedLeadEmail({ name, email, rawChat }) {
+    async sendInterestedLeadEmail({ name, email, phone, rawChat }) {
       await mailer.sendMail({
         from: process.env.SMTP_FROM || process.env.SMTP_USER,
         to: getContactEmail(),
-        replyTo: email,
-        subject: `New interested SubNest lead: ${name}`,
+        replyTo: email || undefined,
+        subject: `New interested SubNest lead: ${name || email || phone}`,
         text: [
           "A website visitor shared their contact details with the SubNest chatbot.",
           "",
-          `Name: ${name}`,
-          `Email: ${email}`,
+          `Name: ${name || "Not provided"}`,
+          `Email: ${email || "Not provided"}`,
+          `Phone: ${phone || "Not provided"}`,
           "",
           "Conversation transcript:",
           JSON.stringify(rawChat || [], null, 2),
@@ -166,20 +169,20 @@ async function startServer() {
   });
 
   app.post("/api/interested-leads", async (req, res) => {
-    const { name, email, raw_chat } = req.body;
+    const { name, email, phone, raw_chat } = req.body;
 
-    if (!name || !email) {
-      res.status(400).json({ error: "Name and email are required" });
+    if (!email && !phone) {
+      res.status(400).json({ error: "An email or phone number is required" });
       return;
     }
 
     try {
       const stmt = db.prepare(`
-        INSERT INTO leads (name, email, score, category, raw_chat)
-        VALUES (?, ?, ?, ?, ?)
+        INSERT INTO leads (name, email, phone, score, category, raw_chat)
+        VALUES (?, ?, ?, ?, ?, ?)
       `);
 
-      const result = stmt.run(name, email, 85, "Interested", JSON.stringify(raw_chat || []));
+      const result = stmt.run(name || null, email || null, phone || null, 85, "Interested", JSON.stringify(raw_chat || []));
 
       if (!notifier) {
         console.warn("Email notifications are not configured. Interested lead saved locally only.");
@@ -188,8 +191,9 @@ async function startServer() {
       }
 
       await notifier.sendInterestedLeadEmail({
-        name,
-        email,
+        name: name || "",
+        email: email || "",
+        phone: phone || "",
         rawChat: raw_chat || [],
       });
 
