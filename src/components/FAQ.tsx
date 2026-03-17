@@ -13,7 +13,7 @@ const faqs = [
   },
   {
     q: "How are leads categorized?",
-    a: "Leads are automatically tagged as Hot, Warm, or Cold based on their BANT score (Budget, Authority, Need, Timeline). Hot leads are delivered to you instantly via email or SMS."
+    a: "Leads are automatically tagged as Hot, Warm, or Cold using the same AI conversation scoring model as our live demos. High-intent leads are delivered instantly so your team can follow up fast."
   },
   {
     q: "Does it support multiple languages?",

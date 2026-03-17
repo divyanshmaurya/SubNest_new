@@ -11,7 +11,7 @@ The AI assistant helps visitors discover relevant properties, answers listing qu
 
 Live Demo Websites
 
-- Skyline Demo: https://skyline1-ten.vercel.app/
+- Skyline Demo: https://skyline-three-psi.vercel.app/
 - Estate Pro Demo: https://estate-pro-kappa.vercel.app/
 
 How SubNest Works
@@ -64,7 +64,7 @@ To learn more or request your AI assistant:
 Email: subnest.ai@gmail.com
 Demo link: https://calendly.com/contact-subnest/online-subnest-ai-assistant-for-real-estate_demo
 Website demos:
-- https://skyline1-ten.vercel.app/
+- https://skyline-three-psi.vercel.app/
 - https://estate-pro-kappa.vercel.app/
 
 SubNest

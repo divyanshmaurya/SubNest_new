@@ -7,7 +7,7 @@ export const DEMO_SITES = [
   {
     name: 'Skyline Demo',
     description: 'A polished residential browsing experience for modern urban listings.',
-    url: 'https://skyline1-ten.vercel.app/',
+    url: 'https://skyline-three-psi.vercel.app/',
   },
   {
     name: 'Estate Pro Demo',

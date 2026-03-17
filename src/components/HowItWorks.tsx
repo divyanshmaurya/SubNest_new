@@ -56,9 +56,9 @@ export default function HowItWorks() {
                   </p>
                 </div>
                 <div>
-                  <h4 className="text-brand-blue font-bold text-xl mb-2">BANT-Based Scoring</h4>
+                  <h4 className="text-brand-blue font-bold text-xl mb-2">AI Lead Scoring</h4>
                   <p className="text-slate-500 text-sm leading-relaxed">
-                    Automated extraction of Budget, Authority, Need, and Timeline (Score 0-100)
+                    The same AI-scored 1-10 lead rating and Hot/Warm/Cold tagging used in our Skyline demo flow.
                   </p>
                 </div>
                 <div>
