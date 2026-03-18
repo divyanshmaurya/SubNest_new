@@ -15,6 +15,7 @@ export default function Navbar() {
           <a href="#how-it-works" className="hover:text-brand-purple transition-colors">How it Works</a>
           <a href="#pricing" className="hover:text-brand-purple transition-colors">Pricing</a>
           <a href="#faq" className="hover:text-brand-purple transition-colors">FAQ</a>
+          <a href="#contact" className="hover:text-brand-purple transition-colors">Contact</a>
         </div>
 
         <div className="flex items-center gap-4">
