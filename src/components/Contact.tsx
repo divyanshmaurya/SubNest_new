@@ -46,16 +46,6 @@ export default function Contact() {
             <p className="text-slate-600">Serving real estate teams worldwide</p>
           </div>
         </div>
-
-        <div className="mt-12 text-center">
-          <a
-            href={`mailto:${CONTACT_EMAIL}`}
-            className="inline-flex items-center gap-2 px-8 py-4 bg-brand-navy text-white rounded-full font-bold text-lg shadow-xl shadow-slate-200 hover:scale-105 transition-transform"
-          >
-            <Mail className="w-5 h-5" />
-            Send Us an Email
-          </a>
-        </div>
       </div>
     </section>
   );
