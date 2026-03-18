@@ -12,10 +12,7 @@ export default function Footer() {
           </div>
           
           <div className="flex flex-wrap items-center justify-center gap-8 text-sm text-slate-500 font-medium">
-            <a href="#" className="hover:text-brand-blue transition-colors">Privacy Policy</a>
-            <a href="#" className="hover:text-brand-blue transition-colors">Terms of Service</a>
-            <a href="#contact" className="hover:text-brand-blue transition-colors">Contact</a>
-            <a href="mailto:contact@subnest.ai" className="hover:text-brand-blue transition-colors">contact@subnest.ai</a>
+<a href="mailto:contact@subnest.ai" className="hover:text-brand-blue transition-colors">contact@subnest.ai</a>
             <a href={DEMO_URL} target="_blank" rel="noreferrer" className="hover:text-brand-blue transition-colors">Book Demo</a>
           </div>
           
