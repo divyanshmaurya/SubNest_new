@@ -732,10 +732,10 @@ export default function Chatbot() {
                   'model',
                   emailResult.emailed
                     ? `Perfect. I've sent your details to ${CONTACT_EMAIL}, and our team will follow up soon.`
-                    : `Your details are saved, but the email was not sent. Debug: ${emailResult.debugMessage || 'No server debug returned.'}`,
+                    : `I couldn't send the notification email. Debug: ${emailResult.debugMessage || 'No server debug returned.'}`,
                 );
               } catch {
-                pushMsg('model', 'Your details are saved, and our team will follow up soon.');
+                pushMsg('model', `I couldn't confirm email delivery. Please try again or contact ${CONTACT_EMAIL} directly.`);
               }
             })();
           }
