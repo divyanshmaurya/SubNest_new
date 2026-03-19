@@ -4,32 +4,32 @@ import { Star, Zap } from 'lucide-react';
 
 export default function Pricing() {
   return (
-    <section id="pricing" className="py-24 bg-white">
+    <section id="pricing" className="py-24 bg-white dark:bg-slate-950">
       <div className="max-w-7xl mx-auto px-6">
-        
+
         {/* Setup Package Table */}
         <div className="mb-20">
           <h2 className="text-3xl font-bold text-brand-blue mb-8">Setup Package</h2>
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse bg-white border border-slate-100 rounded-3xl overflow-hidden shadow-sm">
+            <table className="w-full text-left border-collapse bg-white dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700 rounded-3xl overflow-hidden shadow-sm">
               <thead>
-                <tr className="bg-slate-50 text-slate-500 text-xs uppercase tracking-widest border-b border-slate-100">
+                <tr className="bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-xs uppercase tracking-widest border-b border-slate-100 dark:border-slate-700">
                   <th className="px-8 py-4 font-medium">Setup Package</th>
                   <th className="px-8 py-4 font-medium">Price</th>
                   <th className="px-8 py-4 font-medium">Includes</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-50">
-                <tr className="hover:bg-slate-50/50 transition-colors">
+              <tbody className="divide-y divide-slate-50 dark:divide-slate-700">
+                <tr className="hover:bg-slate-50/50 dark:hover:bg-slate-700/30 transition-colors">
                   <td className="px-8 py-8">
                     <div className="font-bold text-xl text-brand-navy">Website + AI Assistant Setup</div>
                   </td>
                   <td className="px-8 py-8">
                     <div className="font-bold text-2xl text-brand-navy">$2,500</div>
-                    <div className="text-xs text-slate-500 uppercase">One-time fee</div>
+                    <div className="text-xs text-slate-500 dark:text-slate-400 uppercase">One-time fee</div>
                   </td>
                   <td className="px-8 py-8">
-                    <ul className="space-y-2 text-sm text-slate-600">
+                    <ul className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
                       <li>• Branded website setup</li>
                       <li>• AI assistant setup</li>
                       <li>• Listing onboarding</li>
@@ -46,9 +46,9 @@ export default function Pricing() {
         <div className="mb-20">
           <h2 className="text-3xl font-bold text-brand-blue mb-8">Service Plans</h2>
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse bg-white border border-slate-100 rounded-3xl overflow-hidden shadow-sm">
+            <table className="w-full text-left border-collapse bg-white dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700 rounded-3xl overflow-hidden shadow-sm">
               <thead>
-                <tr className="bg-slate-50 text-slate-500 text-xs uppercase tracking-widest border-b border-slate-100">
+                <tr className="bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-xs uppercase tracking-widest border-b border-slate-100 dark:border-slate-700">
                   <th className="px-8 py-4 font-medium">Plan</th>
                   <th className="px-8 py-4 font-medium">Monthly Price</th>
                   <th className="px-8 py-4 font-medium">Active Slots</th>
@@ -56,9 +56,9 @@ export default function Pricing() {
                   <th className="px-8 py-4 font-medium">Features & Delivery</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-50">
+              <tbody className="divide-y divide-slate-50 dark:divide-slate-700">
                 {/* Standard */}
-                <tr className="hover:bg-slate-50/50 transition-colors">
+                <tr className="hover:bg-slate-50/50 dark:hover:bg-slate-700/30 transition-colors">
                   <td className="px-8 py-8">
                     <div className="font-bold text-xl text-brand-navy">Standard</div>
                   </td>
@@ -67,14 +67,14 @@ export default function Pricing() {
                   </td>
                   <td className="px-8 py-8">
                     <div className="font-bold text-brand-navy">Up to 20</div>
-                    <div className="text-xs text-slate-500">Active Listings</div>
+                    <div className="text-xs text-slate-500 dark:text-slate-400">Active Listings</div>
                   </td>
                   <td className="px-8 py-8">
                     <div className="font-bold text-brand-navy">40 Updates</div>
-                    <div className="text-xs text-slate-500">per month</div>
+                    <div className="text-xs text-slate-500 dark:text-slate-400">per month</div>
                   </td>
                   <td className="px-8 py-8">
-                    <ul className="space-y-2 text-xs text-slate-600">
+                    <ul className="space-y-2 text-xs text-slate-600 dark:text-slate-400">
                       <li>🔥 <strong>Hot Leads:</strong> Instant delivery</li>
                       <li>☀️ <strong>Warm/Cold Leads:</strong> Daily morning batch</li>
                       <li>Email + CSV reports</li>
@@ -82,7 +82,7 @@ export default function Pricing() {
                   </td>
                 </tr>
                 {/* Pro */}
-                <tr className="bg-brand-purple/5 hover:bg-brand-purple/10 transition-colors relative">
+                <tr className="bg-brand-purple/5 dark:bg-brand-purple/10 hover:bg-brand-purple/10 dark:hover:bg-brand-purple/15 transition-colors relative">
                   <td className="px-8 py-8">
                     <div className="font-bold text-xl text-brand-navy">Pro</div>
                     <span className="inline-block mt-2 px-2 py-0.5 bg-brand-blue text-white text-[10px] font-bold rounded uppercase tracking-tighter">Recommended</span>
@@ -92,14 +92,14 @@ export default function Pricing() {
                   </td>
                   <td className="px-8 py-8">
                     <div className="font-bold text-brand-navy">Up to 60</div>
-                    <div className="text-xs text-slate-500">Active Listings</div>
+                    <div className="text-xs text-slate-500 dark:text-slate-400">Active Listings</div>
                   </td>
                   <td className="px-8 py-8">
                     <div className="font-bold text-brand-navy">120 Updates</div>
-                    <div className="text-xs text-slate-500">per month</div>
+                    <div className="text-xs text-slate-500 dark:text-slate-400">per month</div>
                   </td>
                   <td className="px-8 py-8">
-                    <ul className="space-y-2 text-xs text-slate-600">
+                    <ul className="space-y-2 text-xs text-slate-600 dark:text-slate-400">
                       <li>🔥 <strong>Hot Leads:</strong> Instant delivery</li>
                       <li>☀️ <strong>Warm/Cold Leads:</strong> Daily morning batch</li>
                       <li>Email + CSV reports</li>
@@ -107,7 +107,7 @@ export default function Pricing() {
                   </td>
                 </tr>
                 {/* Enterprise */}
-                <tr className="hover:bg-slate-50/50 transition-colors">
+                <tr className="hover:bg-slate-50/50 dark:hover:bg-slate-700/30 transition-colors">
                   <td className="px-8 py-8">
                     <div className="font-bold text-xl text-brand-navy">Enterprise</div>
                   </td>
@@ -116,14 +116,14 @@ export default function Pricing() {
                   </td>
                   <td className="px-8 py-8">
                     <div className="font-bold text-brand-navy">Up to 150</div>
-                    <div className="text-xs text-slate-500">Active Listings</div>
+                    <div className="text-xs text-slate-500 dark:text-slate-400">Active Listings</div>
                   </td>
                   <td className="px-8 py-8">
                     <div className="font-bold text-brand-navy">300 Updates</div>
-                    <div className="text-xs text-slate-500">per month</div>
+                    <div className="text-xs text-slate-500 dark:text-slate-400">per month</div>
                   </td>
                   <td className="px-8 py-8">
-                    <ul className="space-y-2 text-xs text-slate-600">
+                    <ul className="space-y-2 text-xs text-slate-600 dark:text-slate-400">
                       <li>🔥 <strong>Hot Leads:</strong> Instant delivery</li>
                       <li>☀️ <strong>Warm/Cold Leads:</strong> Daily morning batch</li>
                       <li>Email + CSV reports</li>
@@ -131,7 +131,7 @@ export default function Pricing() {
                   </td>
                 </tr>
                 {/* Custom */}
-                <tr className="hover:bg-slate-50/50 transition-colors">
+                <tr className="hover:bg-slate-50/50 dark:hover:bg-slate-700/30 transition-colors">
                   <td className="px-8 py-8">
                     <div className="font-bold text-xl italic text-brand-navy">Custom</div>
                   </td>
@@ -139,13 +139,13 @@ export default function Pricing() {
                     <div className="font-bold text-xl italic text-brand-navy">Custom Pricing</div>
                   </td>
                   <td className="px-8 py-8">
-                    <div className="text-xs text-slate-500">Unlimited volume</div>
+                    <div className="text-xs text-slate-500 dark:text-slate-400">Unlimited volume</div>
                   </td>
                   <td className="px-8 py-8">
-                    <div className="text-xs text-slate-500">Unlimited updates</div>
+                    <div className="text-xs text-slate-500 dark:text-slate-400">Unlimited updates</div>
                   </td>
                   <td className="px-8 py-8">
-                    <ul className="space-y-2 text-xs text-slate-600">
+                    <ul className="space-y-2 text-xs text-slate-600 dark:text-slate-400">
                       <li>- For large brokerages with 200+ agents</li>
                       <li>- Optional CRM / API integration</li>
                       <li>- Optional all-lead instant delivery</li>
@@ -167,7 +167,7 @@ export default function Pricing() {
               </div>
               <div className="text-xl md:text-2xl font-bold">
                 <span className="text-orange-600">Available Until March 31.</span>
-                <span className="text-slate-500 ml-2">Experience the future of RE tech.</span>
+                <span className="text-slate-500 dark:text-slate-400 ml-2">Experience the future of RE tech.</span>
               </div>
            </div>
         </div>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { Clock, MessageSquareOff, UserX, CalendarX, AlertCircle } from 'lucide-react';
+import { Clock, MessageSquareOff, UserX, CalendarX } from 'lucide-react';
 
 const problems = [
   {
@@ -27,11 +27,11 @@ const problems = [
 
 export default function PainPoints() {
   return (
-    <section className="py-24 bg-slate-50 relative overflow-hidden">
+    <section className="py-24 bg-slate-50 dark:bg-slate-900/50 relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-5xl font-bold mb-6 text-brand-navy">The Real Estate Hustle is <span className="text-red-600">Broken</span></h2>
-          <p className="text-xl text-slate-600 max-w-2xl mx-auto">
+          <p className="text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
             Inbound leads expect instant gratification. When you're busy showing properties or sleeping, your business is leaking revenue.
           </p>
         </div>
@@ -44,17 +44,16 @@ export default function PainPoints() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.1 }}
-              className="bg-white p-8 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300 group"
+              className="bg-white dark:bg-slate-800 p-8 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm hover:shadow-md transition-all duration-300 group"
             >
-              <div className="w-12 h-12 bg-slate-50 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+              <div className="w-12 h-12 bg-slate-50 dark:bg-slate-700 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                 {p.icon}
               </div>
               <h3 className="text-xl font-bold mb-4 text-brand-navy">{p.title}</h3>
-              <p className="text-slate-500 text-sm leading-relaxed">{p.description}</p>
+              <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">{p.description}</p>
             </motion.div>
           ))}
         </div>
-
       </div>
     </section>
   );
