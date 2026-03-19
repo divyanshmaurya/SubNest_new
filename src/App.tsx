@@ -6,6 +6,7 @@ import HowItWorks from './components/HowItWorks';
 import Features from './components/Features';
 import Pricing from './components/Pricing';
 import FAQ from './components/FAQ';
+import Contact from './components/Contact';
 import Footer from './components/Footer';
 import Chatbot from './components/Chatbot';
 import { DEMO_URL } from './lib/siteConfig';
@@ -44,6 +45,7 @@ export default function App() {
         </section>
 
         <FAQ />
+        <Contact />
       </main>
 
       <Footer />

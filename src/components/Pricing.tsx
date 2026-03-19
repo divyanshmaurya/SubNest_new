@@ -166,7 +166,7 @@ export default function Pricing() {
                 EARLY PARTNER OFFER: FREE SETUP ($2,500 Value)
               </div>
               <div className="text-xl md:text-2xl font-bold">
-                <span className="text-orange-600">First 3 partners only.</span>
+                <span className="text-orange-600">Available Until March 31.</span>
                 <span className="text-slate-500 ml-2">Experience the future of RE tech.</span>
               </div>
            </div>
