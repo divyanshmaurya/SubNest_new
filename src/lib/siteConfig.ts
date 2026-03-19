@@ -1,5 +1,5 @@
 export const DEMO_URL =
-  'https://calendly.com/contact-subnest/online-subnest-ai-assistant-for-real-estate_demo';
+  'https://calendly.com/divyansh-ku/30min';
 
 export const CONTACT_EMAIL = 'subnest.ai@gmail.com';
 
