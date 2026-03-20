@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { MessageSquare, X, Send, Bot, User, Mic, RotateCcw } from 'lucide-react';
-import { GoogleGenAI, LiveServerMessage, Modality } from '@google/genai';
+import { GoogleGenAI, LiveServerMessage, Modality, Type } from '@google/genai';
 import { CONTACT_EMAIL, DEMO_SITES, DEMO_URL } from '../lib/siteConfig';
 
 type ChatRole = 'user' | 'model';
@@ -54,8 +54,16 @@ interface EmailAttemptResult {
   debugMessage?: string;
 }
 
+interface StructuredChatResponse {
+  message: string;
+  extractedData?: Partial<Omit<SessionData, 'stage'>>;
+  nextStage?: Stage;
+}
+
 const CHAT_MODEL = 'gemini-2.5-flash';
 const VOICE_MODEL = 'gemini-2.5-flash-native-audio-preview-12-2025';
+const MAX_HISTORY_MESSAGES = 8;
+const PRODUCT_CONTEXT_CHAR_LIMIT = 900;
 const INITIAL_SESSION: SessionData = { stage: 'intent' };
 const WELCOME =
   "Hi! I'm SubNest AI. I can explain how the website works, show where it fits, and help you decide if it's a fit for your real estate business. Are you looking to use SubNest for your own team, or just exploring how it works?";
@@ -69,6 +77,37 @@ const DEMO_SITE_LABELS = new Map<string, string>([
   [DEMO_URL, 'book a meeting'],
   ...DEMO_SITES.map((site) => [site.url, site.name.toLowerCase()] as [string, string]),
 ]);
+const SESSION_DATA_SCHEMA = {
+  type: Type.OBJECT,
+  properties: {
+    intent: { type: Type.STRING },
+    audienceType: { type: Type.STRING },
+    market: { type: Type.STRING },
+    goals: { type: Type.STRING },
+    timeline: { type: Type.STRING },
+    currentSetup: { type: Type.STRING },
+    painPoint: { type: Type.STRING },
+    demoInterest: { type: Type.STRING },
+    firstName: { type: Type.STRING },
+    lastName: { type: Type.STRING },
+    phone: { type: Type.STRING },
+    email: { type: Type.STRING },
+    contactPreference: { type: Type.STRING },
+    bestTime: { type: Type.STRING },
+  },
+} as const;
+const CHAT_RESPONSE_SCHEMA = {
+  type: Type.OBJECT,
+  properties: {
+    message: { type: Type.STRING },
+    extractedData: SESSION_DATA_SCHEMA,
+    nextStage: { type: Type.STRING },
+  },
+  required: ['message', 'nextStage'],
+} as const;
+const TIMELINE_SIGNAL_PATTERN = /(asap|immediately|this week|this month|next week|next month|within \d+ (day|days|week|weeks|month|months)|soon|ready now)/i;
+const INTEREST_SIGNAL_PATTERN = /(demo|pricing|setup|launch|onboard|partner|follow up|follow-up|book|meeting)/i;
+const EXPLORATION_PATTERN = /(exploring|just looking|researching|curious)/i;
 
 function createMessage(role: ChatRole, text: string): ChatMessage {
   return {
@@ -333,7 +372,99 @@ function serializeMessages(messages: ChatMessage[]) {
   }));
 }
 
-function systemPrompt(session: SessionData, productIntroduction: string) {
+function buildCompactProductContext(productIntroduction: string) {
+  const lines = productIntroduction
+    .split('\n')
+    .map((line) => line.trim())
+    .filter(Boolean);
+
+  const prioritizedLines = lines.filter((line) =>
+    /subnest is|publish|buyers|renters|ai assistant|lead qualification|multilingual|free setup|demo link|website demos|24\/7|website/i.test(
+      line,
+    ),
+  );
+
+  const compact = (prioritizedLines.length > 0 ? prioritizedLines : lines)
+    .join(' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  return compact.length > PRODUCT_CONTEXT_CHAR_LIMIT
+    ? `${compact.slice(0, PRODUCT_CONTEXT_CHAR_LIMIT - 3)}...`
+    : compact;
+}
+
+function mergeSessionData(
+  current: SessionData,
+  extractedData?: Partial<Omit<SessionData, 'stage'>>,
+  nextStage?: Stage,
+): SessionData {
+  const updated: SessionData = { ...current };
+
+  if (extractedData) {
+    for (const [key, value] of Object.entries(extractedData) as Array<
+      [keyof Omit<SessionData, 'stage'>, SessionData[keyof Omit<SessionData, 'stage'>]]
+    >) {
+      if (typeof value === 'string' && value.trim()) {
+        updated[key] = value.trim();
+      }
+    }
+  }
+
+  if (nextStage) {
+    updated.stage = nextStage;
+  }
+
+  return updated;
+}
+
+function shouldNotifyLead(previous: SessionData, updated: SessionData) {
+  return !previous.bestTime && Boolean(updated.bestTime) && Boolean(updated.phone || updated.email);
+}
+
+function buildLeadAnalysis(messages: ChatMessage[], session: SessionData): LeadAnalysis {
+  let score = 2;
+  const userMessageCount = messages.filter((message) => message.role === 'user').length;
+  const combinedSignals = [session.goals, session.painPoint, session.demoInterest, session.intent]
+    .filter(Boolean)
+    .join(' ');
+
+  if (session.phone) score += 2;
+  if (session.email) score += 1;
+  if (session.phone && session.email) score += 1;
+  if (session.contactPreference) score += 1;
+  if (session.bestTime) score += 1;
+  if (session.timeline && TIMELINE_SIGNAL_PATTERN.test(session.timeline)) score += 1;
+  if (session.currentSetup) score += 1;
+  if (INTEREST_SIGNAL_PATTERN.test(combinedSignals)) score += 1;
+  if (EXPLORATION_PATTERN.test(combinedSignals)) score -= 1;
+  if (userMessageCount >= 6) score += 1;
+
+  score = Math.max(1, Math.min(10, score));
+
+  const engagement = userMessageCount >= 6 ? 'High' : userMessageCount >= 4 ? 'Medium' : 'Low';
+  const category = getLeadCategory(score);
+  const scoreReason = `${category} lead based on captured contact details, ${engagement.toLowerCase()} engagement, and ${session.bestTime ? 'a confirmed follow-up time' : 'incomplete follow-up timing'}.`;
+
+  return {
+    score,
+    scoreReason,
+    analysis: [
+      `${category} lead for SubNest with ${engagement.toLowerCase()} engagement.`,
+      `Business type: ${session.audienceType || session.intent || 'Not specified'}.`,
+      `Market: ${session.market || 'Not specified'}.`,
+      `Goals: ${session.goals || 'Not specified'}.`,
+      `Pain point: ${session.painPoint || 'Not specified'}.`,
+      `Timeline: ${session.timeline || 'Not specified'}.`,
+      `Current setup: ${session.currentSetup || 'Not specified'}.`,
+      `Demo interest: ${session.demoInterest || 'Not specified'}.`,
+      `Preferred contact: ${session.contactPreference || 'Not specified'} at ${session.bestTime || 'Not specified'}.`,
+      `Recommended action: follow up with a focused demo tied to ${session.goals || 'their stated goals'} and address ${session.painPoint || 'their current workflow gaps'}.`,
+    ].join(' '),
+  };
+}
+
+function systemPrompt(session: SessionData, productContext: string) {
   const demoLinksBlock = DEMO_SITES.map((site) => `${site.name}: ${site.url}`).join('\n');
 
   return `You are a friendly, warm AI assistant for SubNest. Talk like a real person - short, casual, natural sentences. You are helping visitors understand the SubNest website and qualify interested real estate professionals.
@@ -349,8 +480,8 @@ RULES:
 
 STAGE: ${session.stage}
 DATA: ${JSON.stringify(session)}
-PRODUCT_INFO:
-${productIntroduction}
+PRODUCT_CONTEXT:
+${productContext}
 CONTACT_EMAIL: ${CONTACT_EMAIL}
 BOOKING_LINK: ${DEMO_URL}
 DEMO_LINKS:
@@ -373,15 +504,16 @@ IMPORTANT:
 - Do not advance to value_exchange or later stages unless the user is clearly interested in using SubNest or wants follow-up.
 - If the user is still just asking general questions, answer them and keep next_stage at the current stage.
 
-After your response, on a NEW line add this hidden block:
-|||EXTRACT|||{"stage":"${session.stage}","next_stage":"<next>","data":{<fields>}}|||END|||
-
 Transitions: intent -> core_needs -> core_needs_timeline -> intent_specific -> value_exchange -> lead_name -> lead_phone -> lead_email -> handoff -> complete
 Keys: intent, audienceType, market, goals, timeline, currentSetup, painPoint, demoInterest, firstName, lastName, phone, email, contactPreference, bestTime
-Keep next_stage = current stage if extraction is incomplete or the user is not yet clearly interested.`;
+Return JSON only with:
+- message: what you say to the user
+- extractedData: any newly captured fields
+- nextStage: the next stage
+Keep nextStage = current stage if extraction is incomplete or the user is not yet clearly interested.`;
 }
 
-function voiceSystemPrompt(session: SessionData, productIntroduction: string) {
+function voiceSystemPrompt(session: SessionData, productContext: string) {
   const demoLinksBlock = DEMO_SITES.map((site) => `${site.name}: ${site.url}`).join('\n');
 
   return `You are a friendly SubNest assistant on a voice call. Talk like a real person - casual, warm, short sentences.
@@ -392,7 +524,7 @@ RULES:
 - NEVER narrate your thought process.
 - Just say what you would actually say out loud to a person on the phone.
 - 1-3 short, natural sentences only.
-- Use this product info as your source of truth: ${productIntroduction}
+- Use this product context as your source of truth: ${productContext}
 
 STAGE: ${session.stage}
 DATA: ${JSON.stringify(session)}
@@ -411,89 +543,12 @@ lead_name -> Ask for their cell phone number.
 lead_phone -> Ask for their email address, or ask for one reliable contact method if they hesitate.
 lead_email -> Ask whether they prefer text, call, or email, and what time works best.
 handoff -> Confirm the follow-up and mention that live demos and booking are available.
-complete -> Chat naturally about SubNest and next steps.`;
-}
+complete -> Chat naturally about SubNest and next steps.
 
-async function generateLeadAnalysis(
-  messages: ChatMessage[],
-  session: SessionData,
-  productIntroduction: string,
-): Promise<LeadAnalysis> {
-  const fallbackScore = session.bestTime && (session.phone || session.email) ? 7 : 5;
-  const fallbackCategory = getLeadCategory(fallbackScore);
-  const fallback: LeadAnalysis = {
-    score: fallbackScore,
-    scoreReason: `Fallback ${fallbackCategory.toLowerCase()} lead assessment based on captured contact details and buying signals.`,
-    analysis: [
-      `${fallbackCategory} lead for SubNest.`,
-      `Intent: ${session.intent || 'Not specified'}.`,
-      `Audience type: ${session.audienceType || 'Not specified'}.`,
-      `Market: ${session.market || 'Not specified'}.`,
-      `Goals: ${session.goals || 'Not specified'}.`,
-      `Pain point: ${session.painPoint || 'Not specified'}.`,
-      `Timeline: ${session.timeline || 'Not specified'}.`,
-      `Current setup: ${session.currentSetup || 'Not specified'}.`,
-      `Preferred contact: ${session.contactPreference || 'Not specified'} at ${session.bestTime || 'Not specified'}.`,
-      `Phone: ${session.phone || 'Not provided'}.`,
-      `Email: ${session.email || 'Not provided'}.`,
-    ].join(' '),
-  };
-
-  try {
-    const apiKey = process.env.GEMINI_API_KEY || '';
-    if (!apiKey) {
-      return fallback;
-    }
-
-    const ai = new GoogleGenAI({ apiKey });
-    const transcript = messages
-      .map((message) => `${message.role === 'user' ? 'Customer' : 'AI'}: ${message.text}`)
-      .join('\n');
-
-    const response = await ai.models.generateContent({
-      model: CHAT_MODEL,
-      contents: [{
-        role: 'user',
-        parts: [{
-          text: `You are a senior real estate sales analyst. Analyze this chatbot lead conversation for SubNest, an AI website and lead-conversion product for real estate professionals.
-
-Product context:
-${productIntroduction}
-
-Conversation Transcript:
-${transcript}
-
-Session Data:
-${JSON.stringify(session, null, 2)}
-
-Return a JSON object with:
-- score: integer 1-10 (lead quality: 10 = extremely hot, ready for a demo or onboarding; 1 = cold / low-intent)
-- scoreReason: 1-2 sentence explanation of the score
-- analysis: 200-250 word professional analysis covering:
-  1. Customer intent and motivation
-  2. Business type, market, and fit for SubNest
-  3. Goals, pain points, and timeline
-  4. Engagement level (High/Medium/Low)
-  5. Key buying signals observed
-  6. Recommended next action for the team`,
-        }],
-      }],
-      config: {
-        systemInstruction: 'You are an expert real estate SaaS sales analyst. Be concise, actionable, and always return valid JSON.',
-        responseMimeType: 'application/json',
-      },
-    });
-
-    const parsed = JSON.parse(response.text || '{}');
-    return {
-      score: Math.min(10, Math.max(1, Number(parsed.score) || fallback.score)),
-      scoreReason: parsed.scoreReason || fallback.scoreReason,
-      analysis: parsed.analysis || fallback.analysis,
-    };
-  } catch (error) {
-    console.error('Lead analysis error:', error);
-    return fallback;
-  }
+IMPORTANT:
+- Whenever you capture or confirm a lead field or stage change, call the updateLeadInfo tool.
+- Use the tool for new or corrected values only.
+- Do not ask for information already captured unless the user is correcting it.`;
 }
 
 async function sendEmail(
@@ -560,21 +615,22 @@ export default function Chatbot() {
   const [isModelTyping, setIsModelTyping] = useState(false);
   const [session, setSession] = useState<SessionData>(INITIAL_SESSION);
   const [emailSent, setEmailSent] = useState(false);
-  const [productIntroduction, setProductIntroduction] = useState(FALLBACK_INTRODUCTION);
+  const [productContext, setProductContext] = useState(buildCompactProductContext(FALLBACK_INTRODUCTION));
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesRef = useRef(messages);
   const sessionDataRef = useRef(session);
   const emailSentRef = useRef(emailSent);
-  const productIntroductionRef = useRef(productIntroduction);
+  const productContextRef = useRef(productContext);
   const sessionRef = useRef<any>(null);
-  const speechRecRef = useRef<any>(null);
   const inputAudioCtx = useRef<AudioContext | null>(null);
   const outputAudioCtx = useRef<AudioContext | null>(null);
   const mediaStreamRef = useRef<MediaStream | null>(null);
   const sourcesRef = useRef<Set<AudioBufferSourceNode>>(new Set());
   const nextPlayTime = useRef(0);
-  const isGeneratingText = useRef(false);
+  const currentInputTranscription = useRef('');
+  const currentOutputTranscription = useRef('');
+  const pendingLeadSessionRef = useRef<SessionData | null>(null);
 
   useEffect(() => {
     messagesRef.current = messages;
@@ -589,8 +645,8 @@ export default function Chatbot() {
   }, [emailSent]);
 
   useEffect(() => {
-    productIntroductionRef.current = productIntroduction;
-  }, [productIntroduction]);
+    productContextRef.current = productContext;
+  }, [productContext]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -608,7 +664,7 @@ export default function Chatbot() {
       })
       .then((text) => {
         if (isMounted && text.trim()) {
-          setProductIntroduction(text.trim());
+          setProductContext(buildCompactProductContext(text.trim()));
         }
       })
       .catch((error) => {
@@ -625,8 +681,54 @@ export default function Chatbot() {
       return;
     }
 
-    setMessages((previous) => [...previous, createMessage(role, text.trim())]);
+    setMessages((previous) => {
+      const next = [...previous, createMessage(role, text.trim())];
+      messagesRef.current = next;
+      return next;
+    });
   }, []);
+
+  const sendLeadNotification = useCallback(async (leadSession: SessionData, transcript: ChatMessage[]) => {
+    try {
+      const analysis = buildLeadAnalysis(transcript, leadSession);
+      const emailResult = await sendEmail(leadSession, analysis, transcript);
+      pushMsg(
+        'model',
+        emailResult.emailed
+          ? `Perfect. I've sent your details to ${CONTACT_EMAIL}, and our team will follow up soon.`
+          : `I couldn't send the notification email. Debug: ${emailResult.debugMessage || 'No server debug returned.'}`,
+      );
+    } catch {
+      pushMsg('model', `I couldn't confirm email delivery. Please try again or contact ${CONTACT_EMAIL} directly.`);
+    }
+  }, [pushMsg]);
+
+  const applySessionUpdate = useCallback((
+    update: {
+      extractedData?: Partial<Omit<SessionData, 'stage'>>;
+      nextStage?: Stage;
+    },
+    transcript?: ChatMessage[],
+  ) => {
+    const previousSession = sessionDataRef.current;
+    const updatedSession = mergeSessionData(previousSession, update.extractedData, update.nextStage);
+
+    sessionDataRef.current = updatedSession;
+    setSession(updatedSession);
+
+    if (shouldNotifyLead(previousSession, updatedSession) && !emailSentRef.current) {
+      setEmailSent(true);
+      emailSentRef.current = true;
+
+      if (transcript) {
+        void sendLeadNotification(updatedSession, transcript);
+      } else {
+        pendingLeadSessionRef.current = updatedSession;
+      }
+    }
+
+    return updatedSession;
+  }, [sendLeadNotification]);
 
   const stopAudio = useCallback(() => {
     sourcesRef.current.forEach((source) => {
@@ -641,15 +743,6 @@ export default function Chatbot() {
   }, []);
 
   const stopVoice = useCallback(() => {
-    if (speechRecRef.current) {
-      try {
-        speechRecRef.current.stop();
-      } catch {
-        // Ignore speech recognition stop errors.
-      }
-      speechRecRef.current = null;
-    }
-
     if (mediaStreamRef.current) {
       mediaStreamRef.current.getTracks().forEach((track) => track.stop());
       mediaStreamRef.current = null;
@@ -661,7 +754,9 @@ export default function Chatbot() {
     }
 
     stopAudio();
-    isGeneratingText.current = false;
+    currentInputTranscription.current = '';
+    currentOutputTranscription.current = '';
+    pendingLeadSessionRef.current = null;
     setIsListening(false);
     setIsConnecting(false);
     setMode('text');
@@ -673,83 +768,6 @@ export default function Chatbot() {
     };
   }, [stopVoice]);
 
-  const parseExtraction = useCallback((fullText: string) => {
-    if (!fullText.includes('|||EXTRACT|||')) {
-      return fullText.trim();
-    }
-
-    const [displayText, rest] = fullText.split('|||EXTRACT|||');
-    const jsonText = rest?.split('|||END|||')[0]?.trim();
-
-    if (jsonText) {
-      try {
-        const parsed = JSON.parse(jsonText) as {
-          next_stage?: Stage;
-          data?: Partial<Omit<SessionData, 'stage'>>;
-        };
-
-        setSession((previous) => {
-          const updated: SessionData = { ...previous };
-
-          if (parsed.data) {
-            for (const [key, value] of Object.entries(parsed.data) as Array<
-              [keyof Omit<SessionData, 'stage'>, SessionData[keyof Omit<SessionData, 'stage'>]]
-            >) {
-              if (value) {
-                updated[key] = value;
-              }
-            }
-          }
-
-          if (parsed.next_stage) {
-            updated.stage = parsed.next_stage;
-          }
-
-          const display = displayText.trim();
-          const bestTimeJustCaptured = !previous.bestTime && Boolean(updated.bestTime);
-
-          if (
-            bestTimeJustCaptured &&
-            (updated.phone || updated.email) &&
-            !emailSentRef.current
-          ) {
-            const transcript = display
-              ? [...messagesRef.current, createMessage('model', display)]
-              : [...messagesRef.current];
-
-            setEmailSent(true);
-            emailSentRef.current = true;
-
-            void (async () => {
-              try {
-                const analysis = await generateLeadAnalysis(
-                  transcript,
-                  updated,
-                  productIntroductionRef.current,
-                );
-                const emailResult = await sendEmail(updated, analysis, transcript);
-                pushMsg(
-                  'model',
-                  emailResult.emailed
-                    ? `Perfect. I've sent your details to ${CONTACT_EMAIL}, and our team will follow up soon.`
-                    : `I couldn't send the notification email. Debug: ${emailResult.debugMessage || 'No server debug returned.'}`,
-                );
-              } catch {
-                pushMsg('model', `I couldn't confirm email delivery. Please try again or contact ${CONTACT_EMAIL} directly.`);
-              }
-            })();
-          }
-
-          return updated;
-        });
-      } catch (error) {
-        console.error('Extract parse error:', error);
-      }
-    }
-
-    return displayText.trim();
-  }, [pushMsg]);
-
   const handleTextSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
@@ -758,10 +776,13 @@ export default function Chatbot() {
     }
 
     const text = inputText.trim();
+    const previousMessages = messagesRef.current;
     const userMessage = createMessage('user', text);
+    const historyMessages = [...previousMessages, userMessage];
 
     setInputText('');
-    setMessages((previous) => [...previous, userMessage]);
+    messagesRef.current = historyMessages;
+    setMessages(historyMessages);
     setIsModelTyping(true);
 
     try {
@@ -771,7 +792,7 @@ export default function Chatbot() {
       }
 
       const ai = new GoogleGenAI({ apiKey });
-      const history = [...messagesRef.current, userMessage].slice(-12).map((message) => ({
+      const history = historyMessages.slice(-MAX_HISTORY_MESSAGES).map((message) => ({
         role: message.role,
         parts: [{ text: message.text }],
       }));
@@ -780,13 +801,20 @@ export default function Chatbot() {
         model: CHAT_MODEL,
         contents: history,
         config: {
-          systemInstruction: systemPrompt(sessionDataRef.current, productIntroductionRef.current),
+          systemInstruction: systemPrompt(sessionDataRef.current, productContextRef.current),
+          responseMimeType: 'application/json',
+          responseSchema: CHAT_RESPONSE_SCHEMA,
         },
       });
 
-      const fullText = result.text || "Sorry, I couldn't process that. Could you try again?";
-      const display = parseExtraction(fullText);
-      pushMsg('model', display);
+      const structured = JSON.parse(result.text || '{}') as StructuredChatResponse;
+      const messageText = structured.message?.trim() || "Sorry, I couldn't process that. Could you try again?";
+      const assistantMessage = createMessage('model', messageText);
+      const transcript = [...historyMessages, assistantMessage];
+
+      messagesRef.current = transcript;
+      setMessages(transcript);
+      applySessionUpdate(structured, transcript);
     } catch (error) {
       console.error('Chat error:', error);
       const detail = error instanceof Error ? error.message : 'Unknown Gemini error';
@@ -822,40 +850,24 @@ export default function Chatbot() {
 
       const microphone = await navigator.mediaDevices.getUserMedia({ audio: true });
       mediaStreamRef.current = microphone;
+      currentInputTranscription.current = '';
+      currentOutputTranscription.current = '';
 
-      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-      if (SpeechRecognition) {
-        const recognition = new SpeechRecognition();
-        recognition.continuous = true;
-        recognition.interimResults = false;
-        recognition.lang = 'en-US';
-        recognition.onresult = (voiceEvent: any) => {
-          const transcript = voiceEvent.results[voiceEvent.results.length - 1][0].transcript.trim();
-          if (transcript) {
-            pushMsg('user', transcript);
-          }
-        };
-        recognition.onerror = (voiceEvent: any) => {
-          if (voiceEvent.error !== 'aborted') {
-            try {
-              recognition.start();
-            } catch {
-              // Ignore restart failures.
-            }
-          }
-        };
-        recognition.onend = () => {
-          if (sessionRef.current) {
-            try {
-              recognition.start();
-            } catch {
-              // Ignore restart failures.
-            }
-          }
-        };
-        recognition.start();
-        speechRecRef.current = recognition;
-      }
+      const updateLeadInfoTool = {
+        functionDeclarations: [
+          {
+            name: 'updateLeadInfo',
+            description: 'Update the SubNest lead information and move the conversation to the correct stage.',
+            parameters: {
+              type: Type.OBJECT,
+              properties: {
+                extractedData: SESSION_DATA_SCHEMA,
+                nextStage: { type: Type.STRING },
+              },
+            },
+          },
+        ],
+      } as const;
 
       const liveSession = await ai.live.connect({
         model: VOICE_MODEL,
@@ -889,6 +901,31 @@ export default function Chatbot() {
             processor.connect(inputAudioCtx.current!.destination);
           },
           onmessage: async (message: LiveServerMessage) => {
+            if (message.toolCall) {
+              for (const call of message.toolCall.functionCalls) {
+                if (call.name === 'updateLeadInfo') {
+                  const args = typeof call.args === 'string'
+                    ? JSON.parse(call.args)
+                    : (call.args || {});
+                  const updatedSession = applySessionUpdate(args);
+
+                  if (sessionRef.current) {
+                    sessionRef.current.sendToolResponse({
+                      functionResponses: [{
+                        name: 'updateLeadInfo',
+                        id: call.id,
+                        response: {
+                          result: 'success',
+                          nextStage: updatedSession.stage,
+                          knownData: updatedSession,
+                        },
+                      }],
+                    });
+                  }
+                }
+              }
+            }
+
             const parts = message.serverContent?.modelTurn?.parts || [];
 
             for (const part of parts) {
@@ -907,44 +944,44 @@ export default function Chatbot() {
               }
             }
 
-            if (message.serverContent?.turnComplete && !isGeneratingText.current) {
-              isGeneratingText.current = true;
+            if (message.serverContent?.inputTranscription?.text) {
+              currentInputTranscription.current += message.serverContent.inputTranscription.text;
+            }
 
-              try {
-                const textAi = new GoogleGenAI({ apiKey });
-                const history = messagesRef.current.slice(-12).map((entry) => ({
-                  role: entry.role,
-                  parts: [{ text: entry.text }],
-                }));
+            if (message.serverContent?.outputTranscription?.text) {
+              currentOutputTranscription.current += message.serverContent.outputTranscription.text;
+            }
 
-                if (history.length === 0) {
-                  history.push({ role: 'user', parts: [{ text: 'Hello' }] });
-                }
+            if (message.serverContent?.turnComplete) {
+              const turnMessages: ChatMessage[] = [];
+              const userText = currentInputTranscription.current.trim();
+              const modelText = currentOutputTranscription.current.trim();
 
-                const lastMessage = history[history.length - 1];
-                if (lastMessage.role !== 'user') {
-                  isGeneratingText.current = false;
-                  return;
-                }
-
-                const result = await textAi.models.generateContent({
-                  model: CHAT_MODEL,
-                  contents: history,
-                  config: {
-                    systemInstruction: systemPrompt(sessionDataRef.current, productIntroductionRef.current),
-                  },
-                });
-
-                const fullText = result.text?.trim() || '';
-                if (fullText) {
-                  const display = parseExtraction(fullText);
-                  pushMsg('model', display);
-                }
-              } catch (error) {
-                console.error('Voice text generation error:', error);
-              } finally {
-                isGeneratingText.current = false;
+              if (userText) {
+                turnMessages.push(createMessage('user', userText));
               }
+
+              if (modelText) {
+                turnMessages.push(createMessage('model', modelText));
+              }
+
+              const nextMessages = turnMessages.length > 0
+                ? [...messagesRef.current, ...turnMessages]
+                : messagesRef.current;
+
+              if (turnMessages.length > 0) {
+                messagesRef.current = nextMessages;
+                setMessages(nextMessages);
+              }
+
+              if (pendingLeadSessionRef.current) {
+                const readySession = pendingLeadSessionRef.current;
+                pendingLeadSessionRef.current = null;
+                void sendLeadNotification(readySession, nextMessages);
+              }
+
+              currentInputTranscription.current = '';
+              currentOutputTranscription.current = '';
             }
 
             if (message.serverContent?.interrupted) {
@@ -953,17 +990,20 @@ export default function Chatbot() {
           },
           onerror: (error) => {
             console.error('Voice session error:', error);
-            setIsConnecting(false);
-            setIsListening(false);
+            stopVoice();
           },
           onclose: () => {
             setIsConnecting(false);
             setIsListening(false);
+            sessionRef.current = null;
           },
         },
         config: {
           responseModalities: [Modality.AUDIO],
-          systemInstruction: voiceSystemPrompt(sessionDataRef.current, productIntroductionRef.current),
+          systemInstruction: voiceSystemPrompt(sessionDataRef.current, productContextRef.current),
+          inputAudioTranscription: {},
+          outputAudioTranscription: {},
+          tools: [updateLeadInfoTool],
           speechConfig: {
             voiceConfig: {
               prebuiltVoiceConfig: {
@@ -989,7 +1029,11 @@ export default function Chatbot() {
     }
 
     stopVoice();
-    setMessages([createMessage('model', WELCOME)]);
+    const initialMessages = [createMessage('model', WELCOME)];
+    messagesRef.current = initialMessages;
+    sessionDataRef.current = INITIAL_SESSION;
+    pendingLeadSessionRef.current = null;
+    setMessages(initialMessages);
     setSession(INITIAL_SESSION);
     setEmailSent(false);
     emailSentRef.current = false;
