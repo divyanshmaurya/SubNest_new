@@ -22,18 +22,6 @@
   h1, h2, h3, h4, h5, h6 {
     @apply font-display text-brand-navy tracking-tight;
   }
-
-  /* Dark mode overrides */
-  .dark body,
-  .dark {
-    --color-brand-bg: #0f172a;
-    --color-brand-text: #cbd5e1;
-    --color-brand-navy: #f1f5f9;
-  }
-
-  .dark {
-    color-scheme: dark;
-  }
 }
 
 @layer utilities {
@@ -43,10 +31,6 @@
 
   .glass-card {
     @apply bg-white border border-slate-100 rounded-2xl shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_4px_6px_-2px_rgba(0,0,0,0.05)];
-  }
-
-  .dark .glass-card {
-    @apply bg-slate-800/50 border-slate-700;
   }
 
   .glow-blue {

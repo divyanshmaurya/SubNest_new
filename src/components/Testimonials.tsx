@@ -25,14 +25,14 @@ const testimonials = [
 
 export default function Testimonials() {
   return (
-    <section className="py-24 bg-slate-50 dark:bg-slate-900/50">
+    <section className="py-24 bg-slate-50">
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-center mb-16">
-          <div className="inline-block px-4 py-1.5 mb-6 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full">
+          <div className="inline-block px-4 py-1.5 mb-6 bg-white border border-slate-200 rounded-full">
             <span className="text-xs font-bold tracking-widest text-brand-blue uppercase">Trusted by Top Agents</span>
           </div>
           <h2 className="text-3xl md:text-5xl font-bold text-brand-navy mb-4">What Our Partners Say</h2>
-          <p className="text-lg text-slate-500 dark:text-slate-400 max-w-2xl mx-auto">
+          <p className="text-lg text-slate-500 max-w-2xl mx-auto">
             Real results from real estate professionals using SubNest AI.
           </p>
         </div>
@@ -45,16 +45,16 @@ export default function Testimonials() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.1, duration: 0.5 }}
-              className="relative bg-white dark:bg-slate-800 rounded-2xl p-8 border border-slate-100 dark:border-slate-700 shadow-sm hover:shadow-md transition-shadow"
+              className="relative bg-white rounded-2xl p-8 border border-slate-100 shadow-sm hover:shadow-md transition-shadow"
             >
-              <Quote className="absolute top-6 right-6 text-slate-100 dark:text-slate-700" size={40} />
+              <Quote className="absolute top-6 right-6 text-slate-100" size={40} />
               <div className="flex gap-1 mb-4">
                 {Array.from({ length: t.rating }).map((_, j) => (
                   <Star key={j} size={16} className="text-amber-400 fill-amber-400" />
                 ))}
               </div>
-              <p className="text-slate-600 dark:text-slate-300 leading-relaxed mb-6">"{t.quote}"</p>
-              <div className="border-t border-slate-100 dark:border-slate-700 pt-4">
+              <p className="text-slate-600 leading-relaxed mb-6">"{t.quote}"</p>
+              <div className="border-t border-slate-100 pt-4">
                 <div className="font-bold text-brand-navy">{t.name}</div>
                 <div className="text-sm text-slate-400">{t.role}</div>
               </div>
@@ -64,9 +64,7 @@ export default function Testimonials() {
 
         <div className="mt-16 flex flex-wrap items-center justify-center gap-x-12 gap-y-6">
           {[
-            { value: '50+', label: 'Active Partners' },
-            { value: '10,000+', label: 'Leads Captured' },
-            { value: '98%', label: 'Satisfaction Rate' },
+            { value: '99%', label: 'Satisfaction Rate' },
             { value: '<2min', label: 'Avg. Response Time' },
           ].map((stat, i) => (
             <div key={i} className="text-center">

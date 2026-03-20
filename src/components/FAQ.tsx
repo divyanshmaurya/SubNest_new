@@ -37,19 +37,19 @@ export default function FAQ() {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   return (
-    <section id="faq" className="py-24 bg-slate-50 dark:bg-slate-900/50">
+    <section id="faq" className="py-24 bg-slate-50">
       <div className="max-w-4xl mx-auto px-6">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-5xl font-bold mb-6 text-brand-navy">Frequently Asked Questions</h2>
-          <p className="text-xl text-slate-600 dark:text-slate-400">Everything you need to know about your new AI co-pilot.</p>
+          <p className="text-xl text-slate-600">Everything you need to know about your new AI co-pilot.</p>
         </div>
 
         <div className="space-y-4">
           {faqs.map((faq, i) => (
-            <div key={i} className="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl overflow-hidden shadow-sm">
+            <div key={i} className="bg-white border border-slate-100 rounded-2xl overflow-hidden shadow-sm">
               <button
                 onClick={() => setOpenIndex(openIndex === i ? null : i)}
-                className="w-full p-6 text-left flex justify-between items-center hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
+                className="w-full p-6 text-left flex justify-between items-center hover:bg-slate-50 transition-colors"
               >
                 <span className="font-bold text-lg text-brand-navy">{faq.q}</span>
                 <ChevronDown
@@ -65,7 +65,7 @@ export default function FAQ() {
                     exit={{ height: 0, opacity: 0 }}
                     transition={{ duration: 0.3 }}
                   >
-                    <div className="px-6 pb-6 text-slate-500 dark:text-slate-400 leading-relaxed border-t border-slate-50 dark:border-slate-700 pt-4">
+                    <div className="px-6 pb-6 text-slate-500 leading-relaxed border-t border-slate-50 pt-4">
                       {faq.a}
                     </div>
                   </motion.div>
