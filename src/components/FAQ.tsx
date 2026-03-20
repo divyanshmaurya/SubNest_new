@@ -25,7 +25,7 @@ const faqs = [
   },
   {
     q: "Is setup included?",
-    a: "Our Setup Package ($2,500) includes a fully branded website, AI assistant configuration, and listing onboarding. For our first 3 early partners, this setup fee is completely waived."
+    a: "Our Setup Package ($2,500) includes a fully branded website, AI assistant configuration, and listing onboarding. Until March 31, this setup fee is completely waived."
   },
   {
     q: "Can it work for small broker teams and larger brokerages?",
