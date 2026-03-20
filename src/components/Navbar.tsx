@@ -15,7 +15,7 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 10);
+    const onScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
@@ -27,16 +27,16 @@ export default function Navbar() {
   }, []);
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'bg-white/95 backdrop-blur-md shadow-sm border-b border-slate-100' : 'bg-white/80 backdrop-blur-md border-b border-slate-100'}`}>
-      <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled || mobileOpen ? 'bg-white/90 backdrop-blur-xl shadow-lg shadow-slate-900/5 border-b border-slate-100' : 'bg-transparent'}`}>
+      <div className={`max-w-7xl mx-auto px-6 flex items-center justify-between transition-all duration-300 ${scrolled ? 'h-16' : 'h-20'}`}>
         <a href="#" className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-brand-navy rounded-lg flex items-center justify-center font-display font-bold text-xl text-white">S</div>
-          <span className="font-display font-bold text-2xl tracking-tight text-brand-navy">SUBNEST</span>
+          <div className="w-8 h-8 bg-brand-blue rounded-lg flex items-center justify-center font-display font-bold text-xl text-white">S</div>
+          <span className={`font-display font-bold text-2xl tracking-tight transition-colors duration-300 ${scrolled ? 'text-brand-navy' : 'text-white'}`}>SUBNEST</span>
         </a>
 
-        <div className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-500">
+        <div className={`hidden md:flex items-center gap-8 text-sm font-medium transition-colors duration-300 ${scrolled ? 'text-slate-500' : 'text-white/70'}`}>
           {NAV_LINKS.map((link) => (
-            <a key={link.href} href={link.href} className="hover:text-brand-purple transition-colors">{link.label}</a>
+            <a key={link.href} href={link.href} className={`transition-colors ${scrolled ? 'hover:text-brand-blue' : 'hover:text-white'}`}>{link.label}</a>
           ))}
         </div>
 
@@ -47,17 +47,17 @@ export default function Navbar() {
             href={DEMO_URL}
             target="_blank"
             rel="noreferrer"
-            className="hidden sm:inline-flex bg-brand-navy text-white px-6 py-2.5 rounded-full text-sm font-bold hover:bg-brand-navy/90 transition-colors"
+            className={`hidden sm:inline-flex px-6 py-2.5 rounded-full text-sm font-bold transition-all duration-300 ${scrolled ? 'bg-brand-blue text-white hover:bg-brand-primary' : 'bg-white text-slate-900 hover:bg-white/90'}`}
           >
             Book a Demo
           </motion.a>
 
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="md:hidden p-2 rounded-lg hover:bg-slate-100 transition-colors"
+            className={`md:hidden p-2 rounded-lg transition-colors ${scrolled ? 'hover:bg-slate-100 text-brand-navy' : 'hover:bg-white/10 text-white'}`}
             aria-label="Toggle menu"
           >
-            {mobileOpen ? <X size={24} className="text-brand-navy" /> : <Menu size={24} className="text-brand-navy" />}
+            {mobileOpen ? <X size={24} className="text-brand-navy" /> : <Menu size={24} />}
           </button>
         </div>
       </div>
@@ -77,7 +77,7 @@ export default function Navbar() {
                   key={link.href}
                   href={link.href}
                   onClick={() => setMobileOpen(false)}
-                  className="py-3 px-4 rounded-xl text-base font-medium text-slate-600 hover:bg-slate-50 hover:text-brand-purple transition-colors"
+                  className="py-3 px-4 rounded-xl text-base font-medium text-slate-600 hover:bg-slate-50 hover:text-brand-blue transition-colors"
                 >
                   {link.label}
                 </a>
@@ -87,7 +87,7 @@ export default function Navbar() {
                 target="_blank"
                 rel="noreferrer"
                 onClick={() => setMobileOpen(false)}
-                className="mt-2 py-3 px-4 bg-brand-navy text-white rounded-full text-center font-bold text-sm"
+                className="mt-2 py-3 px-4 bg-brand-blue text-white rounded-full text-center font-bold text-sm"
               >
                 Book a Demo
               </a>

@@ -4,7 +4,7 @@ import { Globe, Tags, BarChart3, Zap } from 'lucide-react';
 
 const features = [
   {
-    icon: <Globe className="text-brand-purple" size={28} />,
+    icon: <Globe className="text-brand-blue" size={28} />,
     title: "Multilingual Instant Engagement",
     description: "Zero-latency response in English, Chinese, Japanese, and Spanish. Never lose a lead due to language barriers."
   },
@@ -56,7 +56,7 @@ export default function Features() {
               whileHover={{ y: -6, scale: 1.01 }}
               className="glass-card p-10 hover:shadow-lg transition-all duration-500 group relative overflow-hidden"
             >
-              <div className="absolute -right-10 -top-10 w-40 h-40 bg-brand-purple/5 rounded-full blur-3xl group-hover:bg-brand-purple/10 transition-colors" />
+              <div className="absolute -right-10 -top-10 w-40 h-40 bg-blue-500/5 rounded-full blur-3xl group-hover:bg-blue-500/10 transition-colors" />
 
               <div className="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center mb-8 group-hover:rotate-6 group-hover:scale-110 transition-transform duration-300 border border-slate-100">
                 {f.icon}

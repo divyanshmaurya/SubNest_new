@@ -1113,7 +1113,7 @@ export default function Chatbot() {
                     <div
                       className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
                         message.role === 'user'
-                          ? 'bg-brand-purple text-white'
+                          ? 'bg-brand-blue text-white'
                           : 'bg-white border border-slate-100 text-brand-navy'
                       }`}
                     >
@@ -1193,7 +1193,7 @@ export default function Chatbot() {
                     value={inputText}
                     onChange={(event) => setInputText(event.target.value)}
                     placeholder="Type your message..."
-                    className="flex-1 bg-slate-100 text-slate-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-purple/20 transition-all"
+                    className="flex-1 bg-slate-100 text-slate-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue/20 transition-all"
                   />
                   <button
                     type="submit"
@@ -1221,7 +1221,7 @@ export default function Chatbot() {
       >
         {isOpen ? <X size={32} /> : <MessageSquare size={32} />}
         {!isOpen && (
-          <span className="absolute -top-1 -right-1 w-5 h-5 bg-brand-purple rounded-full border-2 border-white flex items-center justify-center text-[10px] font-bold">
+          <span className="absolute -top-1 -right-1 w-5 h-5 bg-brand-blue rounded-full border-2 border-white flex items-center justify-center text-[10px] font-bold">
             1
           </span>
         )}

@@ -4,7 +4,7 @@ import { Star, Zap } from 'lucide-react';
 
 export default function Pricing() {
   return (
-    <section id="pricing" className="py-24 bg-white">
+    <section id="pricing" className="py-24 bg-slate-50">
       <div className="max-w-7xl mx-auto px-6">
 
         {/* Setup Package Table */}
@@ -94,7 +94,7 @@ export default function Pricing() {
                   </td>
                 </tr>
                 {/* Pro */}
-                <tr className="bg-brand-purple/5 hover:bg-brand-purple/10 transition-colors relative">
+                <tr className="bg-blue-50 hover:bg-blue-100/50 transition-colors relative">
                   <td className="px-8 py-8">
                     <div className="font-bold text-xl text-brand-navy">Pro</div>
                     <span className="inline-block mt-2 px-2 py-0.5 bg-brand-blue text-white text-[10px] font-bold rounded uppercase tracking-tighter">Recommended</span>

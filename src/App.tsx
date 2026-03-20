@@ -15,7 +15,7 @@ import { DEMO_URL } from './lib/siteConfig';
 
 export default function App() {
   return (
-    <div className="min-h-screen bg-white selection:bg-brand-purple/10">
+    <div className="min-h-screen bg-slate-50 selection:bg-blue-200 selection:text-blue-900">
       <Navbar />
 
       <main>
@@ -29,7 +29,7 @@ export default function App() {
         <Pricing />
 
         {/* Final CTA Section */}
-        <section className="py-24 bg-slate-50">
+        <section className="py-24 bg-white">
           <motion.div
             initial={{ opacity: 0, y: 40, filter: 'blur(6px)' }}
             whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
@@ -48,7 +48,7 @@ export default function App() {
                 href={DEMO_URL}
                 target="_blank"
                 rel="noreferrer"
-                className="w-full sm:w-auto px-10 py-5 bg-brand-navy text-white rounded-full font-bold text-xl shadow-xl shadow-slate-200 transition-transform text-center"
+                className="w-full sm:w-auto px-10 py-5 bg-brand-blue text-white rounded-full font-bold text-xl shadow-xl shadow-blue-200 transition-transform text-center"
               >
                 Book a Demo
               </motion.a>
