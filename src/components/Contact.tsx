@@ -1,20 +1,62 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
-import { Mail, MapPin, Clock, Send, CheckCircle } from 'lucide-react';
+import { Mail, MapPin, Clock, Send, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
 
 const CONTACT_EMAIL = 'contact@subnest.ai';
 
 export default function Contact() {
-  const [submitted, setSubmitted] = useState(false);
+  const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const subject = encodeURIComponent(`SubNest Inquiry from ${formData.name}`);
-    const body = encodeURIComponent(`Name: ${formData.name}\nEmail: ${formData.email}\n\n${formData.message}`);
-    window.open(`mailto:${CONTACT_EMAIL}?subject=${subject}&body=${body}`, '_self');
-    setSubmitted(true);
-    setTimeout(() => setSubmitted(false), 4000);
+    setStatus('sending');
+
+    try {
+      const res = await fetch('/api/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          leadName: formData.name,
+          email: formData.email,
+          phone: '',
+          subject: `SubNest Contact Form: ${formData.name}`,
+          htmlContent: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+              <h2 style="color: #1e40af; border-bottom: 2px solid #2563eb; padding-bottom: 10px;">New Contact Form Submission</h2>
+              <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+                <tr style="background: #eff6ff;">
+                  <td style="padding: 12px; font-weight: bold; border: 1px solid #bfdbfe;">Name</td>
+                  <td style="padding: 12px; border: 1px solid #bfdbfe;">${formData.name}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 12px; font-weight: bold; border: 1px solid #bfdbfe;">Email</td>
+                  <td style="padding: 12px; border: 1px solid #bfdbfe;"><a href="mailto:${formData.email}">${formData.email}</a></td>
+                </tr>
+                <tr style="background: #eff6ff;">
+                  <td style="padding: 12px; font-weight: bold; border: 1px solid #bfdbfe;">Message</td>
+                  <td style="padding: 12px; border: 1px solid #bfdbfe; white-space: pre-wrap;">${formData.message}</td>
+                </tr>
+              </table>
+              <p style="color: #94a3b8; font-size: 12px; margin-top: 30px; text-align: center;">Sent via SubNest Contact Form</p>
+            </div>
+          `,
+          textContent: `New Contact Form Submission\n\nName: ${formData.name}\nEmail: ${formData.email}\n\nMessage:\n${formData.message}`,
+        }),
+      });
+
+      if (res.ok) {
+        setStatus('sent');
+        setFormData({ name: '', email: '', message: '' });
+        setTimeout(() => setStatus('idle'), 4000);
+      } else {
+        setStatus('error');
+        setTimeout(() => setStatus('idle'), 4000);
+      }
+    } catch {
+      setStatus('error');
+      setTimeout(() => setStatus('idle'), 4000);
+    }
   };
 
   return (
@@ -111,14 +153,25 @@ export default function Contact() {
               </div>
               <motion.button
                 type="submit"
+                disabled={status === 'sending'}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="w-full py-4 bg-brand-navy text-white rounded-xl font-bold text-base flex items-center justify-center gap-2 hover:bg-brand-navy/90 transition-colors"
+                className="w-full py-4 bg-brand-navy text-white rounded-xl font-bold text-base flex items-center justify-center gap-2 hover:bg-brand-navy/90 transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
               >
-                {submitted ? (
+                {status === 'sending' ? (
+                  <>
+                    <Loader2 size={18} className="animate-spin" />
+                    Sending...
+                  </>
+                ) : status === 'sent' ? (
                   <>
                     <CheckCircle size={18} />
                     Message Sent!
+                  </>
+                ) : status === 'error' ? (
+                  <>
+                    <AlertCircle size={18} />
+                    Failed to send. Try again.
                   </>
                 ) : (
                   <>
