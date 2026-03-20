@@ -64,7 +64,7 @@ export default function Hero() {
             transition={{ duration: 0.7, ease: [0.25, 0.4, 0.25, 1] }}
             className="inline-block px-4 py-1.5 mb-8 bg-white/10 border border-white/20 rounded-full backdrop-blur-sm"
           >
-            <span className="text-xs font-bold tracking-widest text-blue-300 uppercase">The Future of NYC Real Estate</span>
+            <span className="text-xs font-bold tracking-widest text-blue-300 uppercase">The Future of Real Estate</span>
           </motion.div>
 
           <motion.h1
