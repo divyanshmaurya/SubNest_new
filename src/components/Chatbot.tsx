@@ -1203,10 +1203,6 @@ export default function Chatbot() {
                     <Send size={20} />
                   </button>
                 </form>
-                <div className="mt-3 flex items-center justify-between text-[11px] text-slate-400">
-                  <span>Gemini 2.5 Flash + live audio</span>
-                  <span>{emailSent ? 'Lead captured' : 'Live intro flow'}</span>
-                </div>
               </div>
             )}
           </motion.div>
