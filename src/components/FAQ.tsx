@@ -39,14 +39,27 @@ export default function FAQ() {
   return (
     <section id="faq" className="py-24 bg-slate-50">
       <div className="max-w-4xl mx-auto px-6">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-5xl font-bold mb-6 text-brand-navy">Frequently Asked Questions</h2>
+        <motion.div
+          initial={{ opacity: 0, y: 30, filter: 'blur(6px)' }}
+          whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+          viewport={{ once: true, margin: '-80px' }}
+          transition={{ duration: 0.7, ease: [0.25, 0.4, 0.25, 1] }}
+          className="text-center mb-16"
+        >
+          <h2 className="text-3xl md:text-5xl font-extrabold mb-6 text-brand-navy">Frequently Asked Questions</h2>
           <p className="text-xl text-slate-600">Everything you need to know about your new AI co-pilot.</p>
-        </div>
+        </motion.div>
 
         <div className="space-y-4">
           {faqs.map((faq, i) => (
-            <div key={i} className="bg-white border border-slate-100 rounded-2xl overflow-hidden shadow-sm">
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.08, duration: 0.5, ease: [0.25, 0.4, 0.25, 1] }}
+              className="bg-white border border-slate-100 rounded-2xl overflow-hidden shadow-sm"
+            >
               <button
                 onClick={() => setOpenIndex(openIndex === i ? null : i)}
                 className="w-full p-6 text-left flex justify-between items-center hover:bg-slate-50 transition-colors"
@@ -71,7 +84,7 @@ export default function FAQ() {
                   </motion.div>
                 )}
               </AnimatePresence>
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>

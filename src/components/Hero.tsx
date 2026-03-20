@@ -35,6 +35,11 @@ function CountUp({ target, suffix = '' }: { target: number; suffix?: string }) {
   return <div ref={ref}>{count}{suffix}</div>;
 }
 
+const fadeUp = {
+  hidden: { opacity: 0, y: 40, filter: 'blur(8px)' },
+  visible: { opacity: 1, y: 0, filter: 'blur(0px)' },
+};
+
 export default function Hero() {
   return (
     <section className="relative pt-48 pb-32 overflow-hidden bg-white">
@@ -45,28 +50,44 @@ export default function Hero() {
 
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
+          initial="hidden"
+          animate="visible"
+          transition={{ staggerChildren: 0.12 }}
           className="text-center"
         >
-          <div className="inline-block px-4 py-1.5 mb-8 bg-slate-50 border border-slate-100 rounded-full">
+          <motion.div
+            variants={fadeUp}
+            transition={{ duration: 0.7, ease: [0.25, 0.4, 0.25, 1] }}
+            className="inline-block px-4 py-1.5 mb-8 bg-slate-50 border border-slate-100 rounded-full"
+          >
             <span className="text-xs font-bold tracking-widest text-brand-blue uppercase">The Future of NYC Real Estate</span>
-          </div>
+          </motion.div>
 
-          <h1 className="text-6xl md:text-8xl font-bold tracking-tight mb-10 leading-[1.05] text-brand-navy max-w-5xl mx-auto">
+          <motion.h1
+            variants={fadeUp}
+            transition={{ duration: 0.8, ease: [0.25, 0.4, 0.25, 1] }}
+            className="text-6xl md:text-8xl font-extrabold tracking-tight mb-10 leading-[1.05] text-brand-navy max-w-5xl mx-auto"
+          >
             Your 24/7 AI <br />
-            <span className="text-brand-blue">Real Estate Co-Pilot</span>
-          </h1>
+            <span className="text-gradient">Real Estate Co-Pilot</span>
+          </motion.h1>
 
-          <p className="text-xl md:text-2xl text-slate-500 mb-14 max-w-3xl mx-auto leading-relaxed">
+          <motion.p
+            variants={fadeUp}
+            transition={{ duration: 0.7, ease: [0.25, 0.4, 0.25, 1] }}
+            className="text-xl md:text-2xl text-slate-500 mb-14 max-w-3xl mx-auto leading-relaxed"
+          >
             Automate lead qualification, property discovery, and showing bookings with zero latency. Built for elite agents and broker teams.
-          </p>
+          </motion.p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
+          <motion.div
+            variants={fadeUp}
+            transition={{ duration: 0.6, ease: [0.25, 0.4, 0.25, 1] }}
+            className="flex flex-col sm:flex-row items-center justify-center gap-6"
+          >
             <motion.a
-              whileHover={{ scale: 1.02, y: -2 }}
-              whileTap={{ scale: 0.98 }}
+              whileHover={{ scale: 1.04, y: -3 }}
+              whileTap={{ scale: 0.97 }}
               href={DEMO_URL}
               target="_blank"
               rel="noreferrer"
@@ -75,19 +96,19 @@ export default function Hero() {
               Book a Demo
             </motion.a>
             <motion.button
-              whileHover={{ scale: 1.02, y: -2 }}
-              whileTap={{ scale: 0.98 }}
+              whileHover={{ scale: 1.04, y: -3 }}
+              whileTap={{ scale: 0.97 }}
               onClick={() => document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' })}
               className="w-full sm:w-auto px-12 py-5 bg-white text-brand-navy border border-slate-200 rounded-full font-bold text-xl hover:bg-slate-50 transition-all"
             >
               View Pricing
             </motion.button>
-          </div>
+          </motion.div>
 
           <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.15, ease: 'easeOut' }}
+            initial={{ opacity: 0, y: 50, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 1, delay: 0.5, ease: [0.25, 0.4, 0.25, 1] }}
             className="mt-12 max-w-5xl mx-auto rounded-[2rem] border border-slate-200 bg-white/80 backdrop-blur-sm shadow-[0_30px_90px_-40px_rgba(15,23,42,0.35)] p-5 md:p-7"
           >
             <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 text-left">
@@ -111,10 +132,13 @@ export default function Hero() {
 
             {/* Live preview thumbnails */}
             <div className="mt-6 grid gap-4 md:grid-cols-2">
-              {DEMO_SITES.map((site) => (
+              {DEMO_SITES.map((site, i) => (
                 <motion.a
                   key={site.url}
-                  whileHover={{ y: -4 }}
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.7, delay: 0.7 + i * 0.15, ease: [0.25, 0.4, 0.25, 1] }}
+                  whileHover={{ y: -6, scale: 1.01 }}
                   href={site.url}
                   target="_blank"
                   rel="noreferrer"
@@ -160,12 +184,19 @@ export default function Hero() {
               { label: "Lead Capture", value: 100, suffix: "%" },
               { label: "Languages", value: 4, suffix: "+" }
             ].map((stat, i) => (
-              <div key={i} className="text-center">
-                <div className="text-3xl font-bold text-brand-navy mb-1">
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1, duration: 0.5 }}
+                className="text-center"
+              >
+                <div className="text-3xl font-extrabold text-brand-navy mb-1">
                   <CountUp target={stat.value} suffix={stat.suffix} />
                 </div>
                 <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{stat.label}</div>
-              </div>
+              </motion.div>
             ))}
           </div>
         </motion.div>

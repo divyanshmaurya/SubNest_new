@@ -20,56 +20,56 @@ export default function Contact() {
   return (
     <section id="contact" className="py-24 bg-white">
       <div className="max-w-6xl mx-auto px-6">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-brand-navy mb-4">
+        <motion.div
+          initial={{ opacity: 0, y: 30, filter: 'blur(6px)' }}
+          whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+          viewport={{ once: true, margin: '-80px' }}
+          transition={{ duration: 0.7, ease: [0.25, 0.4, 0.25, 1] }}
+          className="text-center mb-16"
+        >
+          <h2 className="text-4xl md:text-5xl font-extrabold text-brand-navy mb-4">
             Get in Touch
           </h2>
           <p className="text-lg text-slate-600 max-w-2xl mx-auto">
             Have questions about SubNest? We'd love to hear from you. Reach out and our team will get back to you shortly.
           </p>
-        </div>
+        </motion.div>
 
         <div className="grid lg:grid-cols-5 gap-12">
           {/* Contact info cards */}
           <div className="lg:col-span-2 flex flex-col gap-6">
-            <div className="flex items-start gap-4 p-6 rounded-2xl bg-slate-50 border border-slate-200">
-              <div className="w-12 h-12 bg-brand-navy/10 rounded-xl flex items-center justify-center shrink-0">
-                <Mail className="w-6 h-6 text-brand-navy" />
-              </div>
-              <div>
-                <h3 className="font-bold text-brand-navy text-lg mb-1">Email Us</h3>
-                <a
-                  href={`mailto:${CONTACT_EMAIL}`}
-                  className="text-brand-blue hover:underline font-medium text-sm"
-                >
-                  {CONTACT_EMAIL}
-                </a>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-4 p-6 rounded-2xl bg-slate-50 border border-slate-200">
-              <div className="w-12 h-12 bg-brand-navy/10 rounded-xl flex items-center justify-center shrink-0">
-                <Clock className="w-6 h-6 text-brand-navy" />
-              </div>
-              <div>
-                <h3 className="font-bold text-brand-navy text-lg mb-1">Response Time</h3>
-                <p className="text-slate-600 text-sm">We typically respond within 24 hours</p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-4 p-6 rounded-2xl bg-slate-50 border border-slate-200">
-              <div className="w-12 h-12 bg-brand-navy/10 rounded-xl flex items-center justify-center shrink-0">
-                <MapPin className="w-6 h-6 text-brand-navy" />
-              </div>
-              <div>
-                <h3 className="font-bold text-brand-navy text-lg mb-1">Location</h3>
-                <p className="text-slate-600 text-sm">Serving real estate teams worldwide</p>
-              </div>
-            </div>
+            {[
+              { icon: <Mail className="w-6 h-6 text-brand-navy" />, title: 'Email Us', content: <a href={`mailto:${CONTACT_EMAIL}`} className="text-brand-blue hover:underline font-medium text-sm">{CONTACT_EMAIL}</a> },
+              { icon: <Clock className="w-6 h-6 text-brand-navy" />, title: 'Response Time', content: <p className="text-slate-600 text-sm">We typically respond within 24 hours</p> },
+              { icon: <MapPin className="w-6 h-6 text-brand-navy" />, title: 'Location', content: <p className="text-slate-600 text-sm">Serving real estate teams worldwide</p> },
+            ].map((card, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, x: -30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.12, duration: 0.5, ease: [0.25, 0.4, 0.25, 1] }}
+                className="flex items-start gap-4 p-6 rounded-2xl bg-slate-50 border border-slate-200"
+              >
+                <div className="w-12 h-12 bg-brand-navy/10 rounded-xl flex items-center justify-center shrink-0">
+                  {card.icon}
+                </div>
+                <div>
+                  <h3 className="font-bold text-brand-navy text-lg mb-1">{card.title}</h3>
+                  {card.content}
+                </div>
+              </motion.div>
+            ))}
           </div>
 
           {/* Contact form */}
-          <div className="lg:col-span-3">
+          <motion.div
+            initial={{ opacity: 0, x: 30, filter: 'blur(4px)' }}
+            whileInView={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7, ease: [0.25, 0.4, 0.25, 1] }}
+            className="lg:col-span-3"
+          >
             <form onSubmit={handleSubmit} className="bg-slate-50 border border-slate-200 rounded-2xl p-8">
               <div className="grid sm:grid-cols-2 gap-4 mb-4">
                 <div>
@@ -111,8 +111,8 @@ export default function Contact() {
               </div>
               <motion.button
                 type="submit"
-                whileHover={{ scale: 1.01 }}
-                whileTap={{ scale: 0.99 }}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
                 className="w-full py-4 bg-brand-navy text-white rounded-xl font-bold text-base flex items-center justify-center gap-2 hover:bg-brand-navy/90 transition-colors"
               >
                 {submitted ? (
@@ -128,7 +128,7 @@ export default function Contact() {
                 )}
               </motion.button>
             </form>
-          </div>
+          </motion.div>
         </div>
       </div>
     </section>
