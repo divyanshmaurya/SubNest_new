@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { Clock, MessageSquareOff, UserX, CalendarX, AlertCircle } from 'lucide-react';
+import { Clock, MessageSquareOff, UserX, CalendarX } from 'lucide-react';
 
 const problems = [
   {
@@ -27,26 +27,33 @@ const problems = [
 
 export default function PainPoints() {
   return (
-    <section className="py-24 bg-slate-50 relative overflow-hidden">
+    <section className="py-24 bg-white relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-6">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-5xl font-bold mb-6 text-brand-navy">The Real Estate Hustle is <span className="text-red-600">Broken</span></h2>
+        <motion.div
+          initial={{ opacity: 0, y: 30, filter: 'blur(6px)' }}
+          whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+          viewport={{ once: true, margin: '-80px' }}
+          transition={{ duration: 0.7, ease: [0.25, 0.4, 0.25, 1] }}
+          className="text-center mb-16"
+        >
+          <h2 className="text-3xl md:text-5xl font-extrabold mb-6 text-brand-navy">The Real Estate Hustle is <span className="text-red-600">Broken</span></h2>
           <p className="text-xl text-slate-600 max-w-2xl mx-auto">
             Inbound leads expect instant gratification. When you're busy showing properties or sleeping, your business is leaking revenue.
           </p>
-        </div>
+        </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {problems.map((p, i) => (
             <motion.div
               key={i}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }}
-              className="bg-white p-8 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300 group"
+              initial={{ opacity: 0, y: 40, scale: 0.95 }}
+              whileInView={{ opacity: 1, y: 0, scale: 1 }}
+              viewport={{ once: true, margin: '-60px' }}
+              transition={{ delay: i * 0.12, duration: 0.6, ease: [0.25, 0.4, 0.25, 1] }}
+              whileHover={{ y: -8, scale: 1.02 }}
+              className="bg-white p-8 rounded-2xl border border-slate-100 shadow-sm hover:shadow-lg transition-shadow duration-300 group"
             >
-              <div className="w-12 h-12 bg-slate-50 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+              <div className="w-12 h-12 bg-slate-50 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
                 {p.icon}
               </div>
               <h3 className="text-xl font-bold mb-4 text-brand-navy">{p.title}</h3>
@@ -54,7 +61,6 @@ export default function PainPoints() {
             </motion.div>
           ))}
         </div>
-
       </div>
     </section>
   );

@@ -4,12 +4,18 @@ import { Star, Zap } from 'lucide-react';
 
 export default function Pricing() {
   return (
-    <section id="pricing" className="py-24 bg-white">
+    <section id="pricing" className="py-24 bg-slate-50">
       <div className="max-w-7xl mx-auto px-6">
-        
+
         {/* Setup Package Table */}
-        <div className="mb-20">
-          <h2 className="text-3xl font-bold text-brand-blue mb-8">Setup Package</h2>
+        <motion.div
+          initial={{ opacity: 0, y: 40, filter: 'blur(6px)' }}
+          whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+          viewport={{ once: true, margin: '-80px' }}
+          transition={{ duration: 0.7, ease: [0.25, 0.4, 0.25, 1] }}
+          className="mb-20"
+        >
+          <h2 className="text-3xl font-extrabold text-brand-blue mb-8">Setup Package</h2>
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse bg-white border border-slate-100 rounded-3xl overflow-hidden shadow-sm">
               <thead>
@@ -25,7 +31,7 @@ export default function Pricing() {
                     <div className="font-bold text-xl text-brand-navy">Website + AI Assistant Setup</div>
                   </td>
                   <td className="px-8 py-8">
-                    <div className="font-bold text-2xl text-brand-navy">$2,500</div>
+                    <div className="font-extrabold text-2xl text-brand-navy">$2,500</div>
                     <div className="text-xs text-slate-500 uppercase">One-time fee</div>
                   </td>
                   <td className="px-8 py-8">
@@ -40,11 +46,17 @@ export default function Pricing() {
               </tbody>
             </table>
           </div>
-        </div>
+        </motion.div>
 
         {/* Service Plans Table */}
-        <div className="mb-20">
-          <h2 className="text-3xl font-bold text-brand-blue mb-8">Service Plans</h2>
+        <motion.div
+          initial={{ opacity: 0, y: 40, filter: 'blur(6px)' }}
+          whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+          viewport={{ once: true, margin: '-80px' }}
+          transition={{ duration: 0.7, delay: 0.1, ease: [0.25, 0.4, 0.25, 1] }}
+          className="mb-20"
+        >
+          <h2 className="text-3xl font-extrabold text-brand-blue mb-8">Service Plans</h2>
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse bg-white border border-slate-100 rounded-3xl overflow-hidden shadow-sm">
               <thead>
@@ -63,7 +75,7 @@ export default function Pricing() {
                     <div className="font-bold text-xl text-brand-navy">Standard</div>
                   </td>
                   <td className="px-8 py-8">
-                    <div className="font-bold text-2xl text-brand-blue">$750 <span className="text-sm font-normal text-slate-400">/ mo</span></div>
+                    <div className="font-extrabold text-2xl text-brand-blue">$750 <span className="text-sm font-normal text-slate-400">/ mo</span></div>
                   </td>
                   <td className="px-8 py-8">
                     <div className="font-bold text-brand-navy">Up to 20</div>
@@ -82,13 +94,13 @@ export default function Pricing() {
                   </td>
                 </tr>
                 {/* Pro */}
-                <tr className="bg-brand-purple/5 hover:bg-brand-purple/10 transition-colors relative">
+                <tr className="bg-blue-50 hover:bg-blue-100/50 transition-colors relative">
                   <td className="px-8 py-8">
                     <div className="font-bold text-xl text-brand-navy">Pro</div>
                     <span className="inline-block mt-2 px-2 py-0.5 bg-brand-blue text-white text-[10px] font-bold rounded uppercase tracking-tighter">Recommended</span>
                   </td>
                   <td className="px-8 py-8">
-                    <div className="font-bold text-2xl text-brand-blue">$1,500 <span className="text-sm font-normal text-slate-400">/ mo</span></div>
+                    <div className="font-extrabold text-2xl text-brand-blue">$1,500 <span className="text-sm font-normal text-slate-400">/ mo</span></div>
                   </td>
                   <td className="px-8 py-8">
                     <div className="font-bold text-brand-navy">Up to 60</div>
@@ -112,7 +124,7 @@ export default function Pricing() {
                     <div className="font-bold text-xl text-brand-navy">Enterprise</div>
                   </td>
                   <td className="px-8 py-8">
-                    <div className="font-bold text-2xl text-brand-blue">$3,000 <span className="text-sm font-normal text-slate-400">/ mo</span></div>
+                    <div className="font-extrabold text-2xl text-brand-blue">$3,000 <span className="text-sm font-normal text-slate-400">/ mo</span></div>
                   </td>
                   <td className="px-8 py-8">
                     <div className="font-bold text-brand-navy">Up to 150</div>
@@ -156,12 +168,18 @@ export default function Pricing() {
               </tbody>
             </table>
           </div>
-        </div>
+        </motion.div>
 
         {/* Early Partner Offer Banner */}
-        <div className="mt-20 text-center">
+        <motion.div
+          initial={{ opacity: 0, y: 30, scale: 0.96 }}
+          whileInView={{ opacity: 1, y: 0, scale: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7, ease: [0.25, 0.4, 0.25, 1] }}
+          className="mt-20 text-center"
+        >
            <div className="inline-flex flex-col items-center gap-2">
-              <div className="flex items-center gap-3 text-2xl md:text-3xl font-bold text-brand-navy">
+              <div className="flex items-center gap-3 text-2xl md:text-3xl font-extrabold text-brand-navy">
                 <Zap className="text-amber-500 fill-amber-500" size={32} />
                 EARLY PARTNER OFFER: FREE SETUP ($2,500 Value)
               </div>
@@ -170,7 +188,7 @@ export default function Pricing() {
                 <span className="text-slate-500 ml-2">Experience the future of RE tech.</span>
               </div>
            </div>
-        </div>
+        </motion.div>
       </div>
     </section>
   );
