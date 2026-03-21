@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { motion } from 'motion/react';
-import { Calculator, DollarSign, TrendingUp, AlertTriangle } from 'lucide-react';
+import { Calculator, DollarSign, TrendingUp } from 'lucide-react';
 
 export default function ROICalculator() {
   const [numUnits, setNumUnits] = useState(20);
@@ -38,10 +38,10 @@ export default function ROICalculator() {
             <span className="text-xs font-bold tracking-widest text-brand-blue uppercase">ROI Calculator</span>
           </div>
           <h2 className="text-3xl md:text-5xl font-extrabold mb-6 text-brand-navy">
-            How Much Revenue Are You Leaving on the Table?
+            How Much More Could You Be Earning?
           </h2>
           <p className="text-xl text-slate-500 max-w-2xl mx-auto">
-            Every missed lead is a lost broker fee. See what SubNest can recover for you.
+            See the extra revenue SubNest can unlock by capturing every lead, 24/7.
           </p>
         </motion.div>
 
@@ -122,39 +122,39 @@ export default function ROICalculator() {
 
           {/* Results */}
           <div className="flex flex-col gap-6">
-            <div className="flex-1 bg-slate-50 border border-slate-100 rounded-3xl p-8 flex flex-col justify-center">
+            <div className="flex-1 bg-green-50 border border-green-100 rounded-3xl p-8 flex flex-col justify-center">
               <div className="flex items-center gap-3 mb-6">
-                <AlertTriangle className="text-amber-500" size={24} />
-                <h3 className="text-xl font-bold text-brand-navy">You're Potentially Losing</h3>
+                <TrendingUp className="text-green-600" size={24} />
+                <h3 className="text-xl font-bold text-brand-navy">You Could Be Earning</h3>
               </div>
               <div className="space-y-4">
                 <div>
-                  <p className="text-sm text-slate-500 mb-1">Per month</p>
-                  <p className="text-4xl font-extrabold text-red-500">{formatFull(results.monthlyLoss)}</p>
+                  <p className="text-sm text-slate-500 mb-1">Extra per month</p>
+                  <p className="text-4xl font-extrabold text-green-600">{formatFull(results.monthlyLoss)}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-slate-500 mb-1">Per year</p>
-                  <p className="text-5xl font-extrabold text-red-600">{formatFull(results.yearlyLoss)}</p>
+                  <p className="text-sm text-slate-500 mb-1">Extra per year</p>
+                  <p className="text-5xl font-extrabold text-green-700">{formatFull(results.yearlyLoss)}</p>
                 </div>
               </div>
             </div>
 
             <div className="bg-brand-blue rounded-3xl p-8 text-white">
               <div className="flex items-center gap-3 mb-4">
-                <TrendingUp className="text-blue-200" size={24} />
-                <h3 className="text-lg font-bold">SubNest ROI</h3>
+                <DollarSign className="text-green-300" size={24} />
+                <h3 className="text-lg font-bold">With SubNest</h3>
               </div>
               <p className="text-sm text-blue-200 mb-2">
-                At just $750–$3,000/mo, SubNest can help recover a significant portion of these missed leads with 24/7 AI-powered engagement.
+                At just $750–$3,000/mo, SubNest's 24/7 AI-powered engagement captures leads you'd otherwise miss — turning them into signed leases.
               </p>
               <div className="flex items-center gap-2 mt-4">
-                <DollarSign className="text-green-300" size={20} />
+                <TrendingUp className="text-green-300" size={20} />
                 <span className="text-lg font-bold text-green-300">
-                  Up to {formatCurrency(results.yearlyLoss * 0.5)}/yr in recovered revenue
+                  Up to {formatCurrency(results.yearlyLoss * 0.5)}/yr in additional revenue
                 </span>
               </div>
               <p className="text-[11px] text-blue-300 mt-3">
-                * Based on 70% annual turnover, 30% lead loss without instant response, and 50% recovery with SubNest. Actual results may vary.
+                * Based on 70% annual turnover, 30% lead capture improvement, and 50% conversion with SubNest. Actual results may vary.
               </p>
             </div>
           </div>
