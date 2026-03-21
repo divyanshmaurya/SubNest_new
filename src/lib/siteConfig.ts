@@ -1,7 +1,7 @@
 export const DEMO_URL =
   'https://calendly.com/divyansh-ku/30min';
 
-export const CONTACT_EMAIL = 'contact@subnest.ai';
+export const CONTACT_EMAIL = 'info@subnest.ai';
 
 export const DEMO_SITES = [
   {
