@@ -11,7 +11,7 @@ dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const DEFAULT_CONTACT_EMAIL = 'subnest.ai@gmail.com';
+const DEFAULT_CONTACT_EMAIL = 'contact@subnest.ai';
 
 type EmailProvider = 'gmail' | 'smtp' | 'resend' | 'none';
 

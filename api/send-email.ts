@@ -1,4 +1,4 @@
-const DEFAULT_CONTACT_EMAIL = 'subnest.ai@gmail.com';
+const DEFAULT_CONTACT_EMAIL = 'contact@subnest.ai';
 
 type EmailProvider = 'gmail' | 'smtp' | 'resend' | 'none';
 
