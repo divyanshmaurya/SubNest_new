@@ -3,16 +3,18 @@ import { motion } from 'motion/react';
 import { Calculator, DollarSign, TrendingUp, AlertTriangle } from 'lucide-react';
 
 export default function ROICalculator() {
-  const [missedLeads, setMissedLeads] = useState(10);
+  const [numUnits, setNumUnits] = useState(20);
   const [avgMonthlyRent, setAvgMonthlyRent] = useState(3000);
   const [brokerFeeMonths, setBrokerFeeMonths] = useState(1);
 
   const results = useMemo(() => {
     const feePerLease = avgMonthlyRent * brokerFeeMonths;
-    const monthlyLoss = missedLeads * feePerLease * 0.15; // assume 15% close rate
-    const yearlyLoss = monthlyLoss * 12;
+    const yearlyLeases = numUnits * 0.7; // assume 70% annual turnover
+    const missedPerYear = yearlyLeases * 0.3; // 30% of leads lost without instant response
+    const yearlyLoss = missedPerYear * feePerLease;
+    const monthlyLoss = yearlyLoss / 12;
     return { feePerLease, monthlyLoss, yearlyLoss };
-  }, [missedLeads, avgMonthlyRent, brokerFeeMonths]);
+  }, [numUnits, avgMonthlyRent, brokerFeeMonths]);
 
   const formatCurrency = (val: number) =>
     val >= 1000
@@ -59,20 +61,21 @@ export default function ROICalculator() {
 
             <div>
               <label className="flex items-center justify-between mb-3">
-                <span className="text-sm font-semibold text-slate-700">Missed leads per month</span>
-                <span className="text-lg font-extrabold text-brand-blue">{missedLeads}</span>
+                <span className="text-sm font-semibold text-slate-700">Number of units / listings</span>
+                <span className="text-lg font-extrabold text-brand-blue">{numUnits}</span>
               </label>
               <input
                 type="range"
-                min={1}
-                max={50}
-                value={missedLeads}
-                onChange={(e) => setMissedLeads(Number(e.target.value))}
+                min={5}
+                max={200}
+                step={5}
+                value={numUnits}
+                onChange={(e) => setNumUnits(Number(e.target.value))}
                 className="w-full h-2 bg-slate-100 rounded-full appearance-none cursor-pointer accent-brand-blue"
               />
               <div className="flex justify-between text-xs text-slate-400 mt-1">
-                <span>1</span>
-                <span>50</span>
+                <span>5</span>
+                <span>200</span>
               </div>
             </div>
 
@@ -151,7 +154,7 @@ export default function ROICalculator() {
                 </span>
               </div>
               <p className="text-[11px] text-blue-300 mt-3">
-                * Based on a 15% estimated close rate and 50% lead recovery. Actual results may vary.
+                * Based on 70% annual turnover, 30% lead loss without instant response, and 50% recovery with SubNest. Actual results may vary.
               </p>
             </div>
           </div>
