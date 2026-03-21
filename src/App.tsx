@@ -6,6 +6,7 @@ import PainPoints from './components/PainPoints';
 import HowItWorks from './components/HowItWorks';
 import Features from './components/Features';
 import Testimonials from './components/Testimonials';
+import ROICalculator from './components/ROICalculator';
 import Pricing from './components/Pricing';
 import FAQ from './components/FAQ';
 import Contact from './components/Contact';
@@ -26,6 +27,7 @@ export default function App() {
         <Features />
         <Testimonials />
 
+        <ROICalculator />
         <Pricing />
 
         {/* Final CTA Section */}
