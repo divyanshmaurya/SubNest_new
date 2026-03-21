@@ -4,15 +4,15 @@ import { Calculator, DollarSign, TrendingUp, AlertTriangle } from 'lucide-react'
 
 export default function ROICalculator() {
   const [missedLeads, setMissedLeads] = useState(10);
-  const [avgDealValue, setAvgDealValue] = useState(500000);
-  const [commissionRate, setCommissionRate] = useState(3);
+  const [avgMonthlyRent, setAvgMonthlyRent] = useState(3000);
+  const [brokerFeeMonths, setBrokerFeeMonths] = useState(1);
 
   const results = useMemo(() => {
-    const commissionPerDeal = avgDealValue * (commissionRate / 100);
-    const monthlyLoss = missedLeads * commissionPerDeal * 0.15; // assume 15% close rate
+    const feePerLease = avgMonthlyRent * brokerFeeMonths;
+    const monthlyLoss = missedLeads * feePerLease * 0.15; // assume 15% close rate
     const yearlyLoss = monthlyLoss * 12;
-    return { commissionPerDeal, monthlyLoss, yearlyLoss };
-  }, [missedLeads, avgDealValue, commissionRate]);
+    return { feePerLease, monthlyLoss, yearlyLoss };
+  }, [missedLeads, avgMonthlyRent, brokerFeeMonths]);
 
   const formatCurrency = (val: number) =>
     val >= 1000
@@ -39,7 +39,7 @@ export default function ROICalculator() {
             How Much Revenue Are You Leaving on the Table?
           </h2>
           <p className="text-xl text-slate-500 max-w-2xl mx-auto">
-            Every missed lead is lost commission. See what SubNest can recover for you.
+            Every missed lead is a lost broker fee. See what SubNest can recover for you.
           </p>
         </motion.div>
 
@@ -78,41 +78,41 @@ export default function ROICalculator() {
 
             <div>
               <label className="flex items-center justify-between mb-3">
-                <span className="text-sm font-semibold text-slate-700">Average deal value</span>
-                <span className="text-lg font-extrabold text-brand-blue">{formatFull(avgDealValue)}</span>
+                <span className="text-sm font-semibold text-slate-700">Average monthly rent</span>
+                <span className="text-lg font-extrabold text-brand-blue">{formatFull(avgMonthlyRent)}</span>
               </label>
               <input
                 type="range"
-                min={100000}
-                max={5000000}
-                step={50000}
-                value={avgDealValue}
-                onChange={(e) => setAvgDealValue(Number(e.target.value))}
+                min={1000}
+                max={20000}
+                step={250}
+                value={avgMonthlyRent}
+                onChange={(e) => setAvgMonthlyRent(Number(e.target.value))}
                 className="w-full h-2 bg-slate-100 rounded-full appearance-none cursor-pointer accent-brand-blue"
               />
               <div className="flex justify-between text-xs text-slate-400 mt-1">
-                <span>$100k</span>
-                <span>$5M</span>
+                <span>$1,000</span>
+                <span>$20,000</span>
               </div>
             </div>
 
             <div>
               <label className="flex items-center justify-between mb-3">
-                <span className="text-sm font-semibold text-slate-700">Commission rate</span>
-                <span className="text-lg font-extrabold text-brand-blue">{commissionRate}%</span>
+                <span className="text-sm font-semibold text-slate-700">Broker fee (months of rent)</span>
+                <span className="text-lg font-extrabold text-brand-blue">{brokerFeeMonths} mo</span>
               </label>
               <input
                 type="range"
-                min={1}
-                max={6}
+                min={0.5}
+                max={2}
                 step={0.5}
-                value={commissionRate}
-                onChange={(e) => setCommissionRate(Number(e.target.value))}
+                value={brokerFeeMonths}
+                onChange={(e) => setBrokerFeeMonths(Number(e.target.value))}
                 className="w-full h-2 bg-slate-100 rounded-full appearance-none cursor-pointer accent-brand-blue"
               />
               <div className="flex justify-between text-xs text-slate-400 mt-1">
-                <span>1%</span>
-                <span>6%</span>
+                <span>0.5 mo</span>
+                <span>2 mo</span>
               </div>
             </div>
           </div>
