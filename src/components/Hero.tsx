@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { motion } from 'motion/react';
 import { ArrowUpRight } from 'lucide-react';
 import { DEMO_SITES, DEMO_URL } from '../lib/siteConfig';
+import NeuralNetwork from './NeuralNetwork';
 
 function CountUp({ target, suffix = '' }: { target: number; suffix?: string }) {
   const [count, setCount] = useState(0);
@@ -45,9 +46,9 @@ export default function Hero() {
     <section className="relative pt-48 pb-32 overflow-hidden bg-slate-900">
       {/* Gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-900 to-blue-950" />
-      {/* Subtle dot pattern */}
-      <div className="absolute inset-0 z-0 opacity-[0.07] pointer-events-none">
-        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(#3b82f6_1px,transparent_1px)] [background-size:40px_40px]" />
+      {/* Neural network animation */}
+      <div className="absolute inset-0 z-0">
+        <NeuralNetwork />
       </div>
       {/* Ambient glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-blue-500/10 rounded-full blur-[120px] pointer-events-none" />
