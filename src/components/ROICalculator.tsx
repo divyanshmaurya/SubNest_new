@@ -3,18 +3,17 @@ import { motion } from 'motion/react';
 import { Calculator, DollarSign, TrendingUp } from 'lucide-react';
 
 export default function ROICalculator() {
-  const [numUnits, setNumUnits] = useState(20);
+  const [inquiriesPerMonth, setInquiriesPerMonth] = useState(50);
   const [avgMonthlyRent, setAvgMonthlyRent] = useState(3000);
   const [brokerFeeMonths, setBrokerFeeMonths] = useState(1);
 
   const results = useMemo(() => {
     const feePerLease = avgMonthlyRent * brokerFeeMonths;
-    const yearlyLeases = numUnits * 0.7; // assume 70% annual turnover
-    const missedPerYear = yearlyLeases * 0.3; // 30% of leads lost without instant response
-    const yearlyLoss = missedPerYear * feePerLease;
-    const monthlyLoss = yearlyLoss / 12;
-    return { feePerLease, monthlyLoss, yearlyLoss };
-  }, [numUnits, avgMonthlyRent, brokerFeeMonths]);
+    const convertedPerMonth = inquiriesPerMonth * 0.15; // 15% conversion with instant AI response
+    const monthlyEarnings = convertedPerMonth * feePerLease;
+    const yearlyEarnings = monthlyEarnings * 12;
+    return { feePerLease, monthlyEarnings, yearlyEarnings };
+  }, [inquiriesPerMonth, avgMonthlyRent, brokerFeeMonths]);
 
   const formatCurrency = (val: number) =>
     val >= 1000
@@ -61,21 +60,21 @@ export default function ROICalculator() {
 
             <div>
               <label className="flex items-center justify-between mb-3">
-                <span className="text-sm font-semibold text-slate-700">Number of units / listings</span>
-                <span className="text-lg font-extrabold text-brand-blue">{numUnits}</span>
+                <span className="text-sm font-semibold text-slate-700">Inquiries per month</span>
+                <span className="text-lg font-extrabold text-brand-blue">{inquiriesPerMonth}</span>
               </label>
               <input
                 type="range"
-                min={5}
-                max={200}
-                step={5}
-                value={numUnits}
-                onChange={(e) => setNumUnits(Number(e.target.value))}
+                min={10}
+                max={500}
+                step={10}
+                value={inquiriesPerMonth}
+                onChange={(e) => setInquiriesPerMonth(Number(e.target.value))}
                 className="w-full h-2 bg-slate-100 rounded-full appearance-none cursor-pointer accent-brand-blue"
               />
               <div className="flex justify-between text-xs text-slate-400 mt-1">
-                <span>5</span>
-                <span>200</span>
+                <span>10</span>
+                <span>500</span>
               </div>
             </div>
 
@@ -130,11 +129,11 @@ export default function ROICalculator() {
               <div className="space-y-4">
                 <div>
                   <p className="text-sm text-slate-500 mb-1">Extra per month</p>
-                  <p className="text-4xl font-extrabold text-green-600">{formatFull(results.monthlyLoss)}</p>
+                  <p className="text-4xl font-extrabold text-green-600">{formatFull(results.monthlyEarnings)}</p>
                 </div>
                 <div>
                   <p className="text-sm text-slate-500 mb-1">Extra per year</p>
-                  <p className="text-5xl font-extrabold text-green-700">{formatFull(results.yearlyLoss)}</p>
+                  <p className="text-5xl font-extrabold text-green-700">{formatFull(results.yearlyEarnings)}</p>
                 </div>
               </div>
             </div>
@@ -150,11 +149,11 @@ export default function ROICalculator() {
               <div className="flex items-center gap-2 mt-4">
                 <TrendingUp className="text-green-300" size={20} />
                 <span className="text-lg font-bold text-green-300">
-                  Up to {formatCurrency(results.yearlyLoss * 0.5)}/yr in additional revenue
+                  Up to {formatCurrency(results.yearlyEarnings * 0.5)}/yr in additional revenue
                 </span>
               </div>
               <p className="text-[11px] text-blue-300 mt-3">
-                * Based on 70% annual turnover, 30% lead capture improvement, and 50% conversion with SubNest. Actual results may vary.
+                * Based on 15% inquiry-to-lease conversion rate with instant AI response. Actual results may vary.
               </p>
             </div>
           </div>
