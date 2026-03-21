@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { motion } from 'motion/react';
 import { ArrowUpRight } from 'lucide-react';
 import { DEMO_SITES, DEMO_URL } from '../lib/siteConfig';
+import CitySkyline from './CitySkyline';
 
 
 function CountUp({ target, suffix = '' }: { target: number; suffix?: string }) {
@@ -43,9 +44,13 @@ const fadeUp = {
 
 export default function Hero() {
   return (
-    <section className="relative pt-48 pb-32 overflow-hidden bg-slate-900/90 backdrop-blur-sm">
+    <section className="relative pt-48 pb-32 overflow-hidden bg-slate-900">
       {/* Gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-900 to-blue-950" />
+      {/* City skyline animation */}
+      <div className="absolute inset-0 z-0">
+        <CitySkyline />
+      </div>
       {/* Ambient glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-blue-500/10 rounded-full blur-[120px] pointer-events-none" />
 
