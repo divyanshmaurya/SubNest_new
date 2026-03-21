@@ -270,6 +270,8 @@ function formatEmailDebug(payload: any, status: number) {
   if (debug) {
     details.push(`provider=${debug.provider ?? 'unknown'}`);
     details.push(`configured=${String(debug.configured ?? false)}`);
+    details.push(`sender=${debug.senderEmail || 'not-set'}`);
+    details.push(`receiver=${debug.recipientEmail || debug.contactEmail || 'not-set'}`);
 
     if (debug.error) {
       details.push(`detail=${debug.error}`);
@@ -278,6 +280,7 @@ function formatEmailDebug(payload: any, status: number) {
     if (debug.gmail) {
       details.push(`gmailUser=${String(Boolean(debug.gmail.hasUser))}`);
       details.push(`gmailAppPassword=${String(Boolean(debug.gmail.hasAppPassword))}`);
+      details.push(`gmailAppPasswordPreview=${debug.gmail.appPasswordPreview || 'not-set'}`);
     }
 
     if (debug.smtp) {

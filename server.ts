@@ -19,9 +19,12 @@ type EmailDebugInfo = {
   provider: EmailProvider;
   configured: boolean;
   contactEmail: string;
+  senderEmail: string;
+  recipientEmail: string;
   gmail: {
     hasUser: boolean;
     hasAppPassword: boolean;
+    appPasswordPreview: string;
   };
   resend: {
     hasApiKey: boolean;
@@ -127,6 +130,23 @@ function getContactEmail() {
   return process.env.NOTIFICATION_EMAIL_TO || DEFAULT_CONTACT_EMAIL;
 }
 
+function getSenderEmail() {
+  return process.env.GMAIL_USER || process.env.SMTP_FROM || process.env.SMTP_USER || process.env.EMAIL_FROM || '';
+}
+
+function maskSecretPreview(value?: string) {
+  const trimmed = value?.trim() || '';
+  if (!trimmed) {
+    return '';
+  }
+
+  if (trimmed.length <= 4) {
+    return trimmed;
+  }
+
+  return `${trimmed.slice(0, 2)}...${trimmed.slice(-2)}`;
+}
+
 function getEmailProvider(): EmailProvider {
   if (process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD) {
     return 'gmail';
@@ -148,9 +168,12 @@ function getEmailDebugInfo(error?: string): EmailDebugInfo {
     provider: getEmailProvider(),
     configured: getEmailProvider() !== 'none',
     contactEmail: getContactEmail(),
+    senderEmail: getSenderEmail(),
+    recipientEmail: getContactEmail(),
     gmail: {
       hasUser: Boolean(process.env.GMAIL_USER),
       hasAppPassword: Boolean(process.env.GMAIL_APP_PASSWORD),
+      appPasswordPreview: maskSecretPreview(process.env.GMAIL_APP_PASSWORD),
     },
     resend: {
       hasApiKey: Boolean(process.env.RESEND_API_KEY),
