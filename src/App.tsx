@@ -13,10 +13,17 @@ import Contact from './components/Contact';
 import Footer from './components/Footer';
 import Chatbot from './components/Chatbot';
 import { DEMO_URL } from './lib/siteConfig';
+import AuroraMesh from './components/AuroraMesh';
 
 export default function App() {
   return (
-    <div className="min-h-screen bg-slate-50 selection:bg-blue-200 selection:text-blue-900">
+    <div className="min-h-screen bg-slate-50 selection:bg-blue-200 selection:text-blue-900 relative">
+      {/* Global aurora background */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        <AuroraMesh />
+      </div>
+
+      <div className="relative z-10">
       <Navbar />
 
       <main>
@@ -31,7 +38,7 @@ export default function App() {
         <Pricing />
 
         {/* Final CTA Section */}
-        <section className="py-24 bg-white">
+        <section className="py-24 bg-white/85 backdrop-blur-sm">
           <motion.div
             initial={{ opacity: 0, y: 40, filter: 'blur(6px)' }}
             whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
@@ -64,6 +71,7 @@ export default function App() {
 
       <Footer />
       <Chatbot />
+      </div>
     </div>
   );
 }

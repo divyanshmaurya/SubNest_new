@@ -4,7 +4,7 @@ import { Star, Zap } from 'lucide-react';
 
 export default function Pricing() {
   return (
-    <section id="pricing" className="py-24 bg-slate-50">
+    <section id="pricing" className="py-24 bg-slate-50/85 backdrop-blur-sm">
       <div className="max-w-7xl mx-auto px-6">
 
         {/* Setup Package Table */}
