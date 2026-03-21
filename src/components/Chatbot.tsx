@@ -64,6 +64,7 @@ const CHAT_MODEL = 'gemini-2.5-flash';
 const VOICE_MODEL = 'gemini-2.5-flash-native-audio-preview-12-2025';
 const MAX_HISTORY_MESSAGES = 8;
 const PRODUCT_CONTEXT_CHAR_LIMIT = 900;
+const EMAIL_REQUEST_TIMEOUT_MS = 15000;
 const INITIAL_SESSION: SessionData = { stage: 'intent' };
 const WELCOME =
   "Hi! I'm SubNest AI. I can explain how the website works, show where it fits, and help you decide if it's a fit for your real estate business. Are you looking to use SubNest for your own team, or just exploring how it works?";
@@ -418,8 +419,16 @@ function mergeSessionData(
   return updated;
 }
 
+function isFollowUpStage(stage: Stage) {
+  return stage === 'handoff' || stage === 'complete';
+}
+
 function shouldNotifyLead(previous: SessionData, updated: SessionData) {
-  return !previous.bestTime && Boolean(updated.bestTime) && Boolean(updated.phone || updated.email);
+  const hasContactMethod = Boolean(updated.phone || updated.email);
+  const capturedBestTime = !previous.bestTime && Boolean(updated.bestTime);
+  const enteredFollowUpStage = !isFollowUpStage(previous.stage) && isFollowUpStage(updated.stage);
+
+  return hasContactMethod && (capturedBestTime || enteredFollowUpStage);
 }
 
 function buildLeadAnalysis(messages: ChatMessage[], session: SessionData): LeadAnalysis {
@@ -556,6 +565,9 @@ async function sendEmail(
   result: LeadAnalysis,
   messages: ChatMessage[],
 ): Promise<EmailAttemptResult> {
+  const controller = new AbortController();
+  const timeoutId = window.setTimeout(() => controller.abort(), EMAIL_REQUEST_TIMEOUT_MS);
+
   try {
     const subject = buildLeadSubject(session, result);
     const htmlContent = buildEmailHtml(session, result, messages);
@@ -563,6 +575,7 @@ async function sendEmail(
     const response = await fetch('/api/send-email', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      signal: controller.signal,
       body: JSON.stringify({
         subject,
         htmlContent,
@@ -597,11 +610,20 @@ async function sendEmail(
       debugMessage: formatEmailDebug(payload, response.status),
     };
   } catch (error) {
+    if (error instanceof DOMException && error.name === 'AbortError') {
+      return {
+        emailed: false,
+        debugMessage: `request_timeout=${EMAIL_REQUEST_TIMEOUT_MS}ms`,
+      };
+    }
+
     const message = error instanceof Error ? error.message : 'Unknown network error';
     return {
       emailed: false,
       debugMessage: `request_failed=${message}`,
     };
+  } finally {
+    window.clearTimeout(timeoutId);
   }
 }
 
@@ -867,7 +889,7 @@ export default function Chatbot() {
             },
           },
         ],
-      } as const;
+      };
 
       const liveSession = await ai.live.connect({
         model: VOICE_MODEL,
