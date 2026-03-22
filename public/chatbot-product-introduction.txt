@@ -62,7 +62,7 @@ Contact
 
 To learn more or request your AI assistant:
 Email: subnest.ai@gmail.com
-Demo link: https://calendly.com/divyansh-ku/30min
+Demo link: https://calendly.com/contact-subnest/subnest-demo
 Website demos:
 - https://skyline-three-psi.vercel.app/
 - https://estate-pro-kappa.vercel.app/
