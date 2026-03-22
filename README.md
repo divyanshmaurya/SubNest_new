@@ -7,7 +7,7 @@ The chatbot can:
 - detect interested visitors
 - ask for the visitor's name and email
 - save leads locally
-- email interested lead details to `subnest.ai@gmail.com` when notifications are configured
+- email interested lead details to `contact@subnest.ai` when notifications are configured
 
 ## Prerequisites
 
@@ -30,7 +30,7 @@ Recommended setup with Resend:
 
 ```env
 GEMINI_API_KEY="your-gemini-api-key"
-NOTIFICATION_EMAIL_TO="subnest.ai@gmail.com"
+NOTIFICATION_EMAIL_TO="contact@subnest.ai"
 RESEND_API_KEY="re_123"
 EMAIL_FROM="SubNest Website <onboarding@resend.dev>"
 ```
@@ -39,7 +39,7 @@ Optional SMTP fallback:
 
 ```env
 GEMINI_API_KEY="your-gemini-api-key"
-NOTIFICATION_EMAIL_TO="subnest.ai@gmail.com"
+NOTIFICATION_EMAIL_TO="contact@subnest.ai"
 SMTP_HOST="smtp.example.com"
 SMTP_PORT="587"
 SMTP_USER="smtp-user"
@@ -53,7 +53,7 @@ SMTP_FROM="SubNest Website <no-reply@subnest.ai>"
   Used by the chatbot for Gemini responses and text-to-speech.
 
 - `NOTIFICATION_EMAIL_TO`
-  Inbox that should receive interested lead notifications. Defaults to `subnest.ai@gmail.com`.
+  Inbox that should receive interested lead notifications. Defaults to `contact@subnest.ai`.
 
 - `RESEND_API_KEY`
   API key for Resend. If this and `EMAIL_FROM` are present, the app uses Resend instead of SMTP.
