@@ -16,7 +16,7 @@ const features = [
   {
     icon: <BarChart3 className="text-brand-cyan" size={28} />,
     title: "AI Lead Scoring",
-    description: "Every lead gets the same AI-scored 1-10 rating and Hot/Warm/Cold tag."
+    description: "Every lead gets the same AI-scored 1-10 rating and Hot/Warm/Cold tag used in our Skyline demo flow."
   },
   {
     icon: <Zap className="text-amber-500" size={28} />,
