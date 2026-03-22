@@ -424,7 +424,18 @@ function mergeSessionData(
 }
 
 function shouldNotifyLead(previous: SessionData, updated: SessionData) {
-  return !previous.bestTime && Boolean(updated.bestTime) && Boolean(updated.phone || updated.email);
+  if (!updated.phone && !updated.email) return false;
+
+  // Trigger when bestTime is newly captured.
+  if (!previous.bestTime && Boolean(updated.bestTime)) return true;
+
+  // Also trigger when the stage reaches handoff or complete, even if
+  // the model didn't extract bestTime as a structured field.
+  const preHandoff = previous.stage !== 'handoff' && previous.stage !== 'complete';
+  const nowHandoff = updated.stage === 'handoff' || updated.stage === 'complete';
+  if (preHandoff && nowHandoff) return true;
+
+  return false;
 }
 
 function buildLeadAnalysis(messages: ChatMessage[], session: SessionData): LeadAnalysis {
