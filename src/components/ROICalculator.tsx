@@ -152,9 +152,6 @@ export default function ROICalculator() {
                   Up to {formatCurrency(results.yearlyEarnings * 0.5)}/yr in additional revenue
                 </span>
               </div>
-              <p className="text-[11px] text-blue-300 mt-3">
-                * Based on 15% inquiry-to-lease conversion rate with instant AI response. Actual results may vary.
-              </p>
             </div>
           </div>
         </motion.div>
