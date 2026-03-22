@@ -945,19 +945,11 @@ export default function Chatbot() {
                         id: call.id,
                         response: {
                           result: 'success',
-                          nextStage: updatedSession.stage,
-                          knownData: updatedSession,
+                          currentStage: updatedSession.stage,
+                          sessionData: updatedSession,
+                          instruction: `Stage is now "${updatedSession.stage}". Respond according to this stage only. Do NOT repeat what you already said.`,
                         },
                       }],
-                    });
-
-                    // Send updated context so the model knows the new stage/data.
-                    sessionRef.current.sendClientContent({
-                      turns: {
-                        role: 'user',
-                        parts: [{ text: `[CONTEXT UPDATE] Stage is now "${updatedSession.stage}". Session data: ${JSON.stringify(updatedSession)}. Follow the instructions for this stage only.` }],
-                      },
-                      turnComplete: false,
                     });
                   }
                 }
