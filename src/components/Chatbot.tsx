@@ -990,24 +990,6 @@ export default function Chatbot() {
               currentOutputTranscription.current += message.serverContent.outputTranscription.text;
             }
 
-            // Show live transcription in the chat as it streams in.
-            if (message.serverContent?.inputTranscription || message.serverContent?.outputTranscription) {
-              const liveUser = currentInputTranscription.current.trim();
-              const liveModel = currentOutputTranscription.current.trim();
-              const liveMsgs: ChatMessage[] = [];
-
-              if (liveUser) {
-                liveMsgs.push({ ...createMessage('user', liveUser), id: 'voice-user-live' });
-              }
-              if (liveModel) {
-                liveMsgs.push({ ...createMessage('model', liveModel), id: 'voice-model-live' });
-              }
-
-              if (liveMsgs.length > 0) {
-                setMessages([...messagesRef.current, ...liveMsgs]);
-              }
-            }
-
             if (message.serverContent?.turnComplete) {
               const turnMessages: ChatMessage[] = [];
               const userText = currentInputTranscription.current.trim();
@@ -1040,7 +1022,6 @@ export default function Chatbot() {
 
             if (message.serverContent?.interrupted) {
               stopAudio();
-              // Clear the output buffer since this response was cut short.
               currentOutputTranscription.current = '';
             }
           },
