@@ -7,7 +7,8 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-6">
         <div className="flex flex-col md:flex-row items-center justify-between gap-8">
           <div className="flex items-center gap-2">
-            <img src="/logo.png" alt="SubNest" className="h-10 rounded-lg" />
+            <img src="/logo.png" alt="SubNest" className="h-8 rounded-lg" />
+            <span className="font-display font-bold text-2xl tracking-tight text-white">SUBNEST</span>
           </div>
 
           <div className="flex flex-wrap items-center justify-center gap-8 text-sm text-slate-400 font-medium">
