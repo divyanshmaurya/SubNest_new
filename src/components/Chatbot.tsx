@@ -73,6 +73,11 @@ const CHAT_FAILURE_MESSAGE =
   'SubNest AI could not get a response right now. Please check the Gemini API key or browser console, then try again.';
 const MARKDOWN_LINK_PATTERN = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g;
 const URL_PATTERN = /(https?:\/\/[^\s)]+)/g;
+
+/** Split concatenated URLs that have no whitespace between them (e.g. "https://a.comhttps://b.com") */
+function splitConcatenatedUrls(text: string): string {
+  return text.replace(/(https?:\/\/[^\s)]+?)(https?:\/\/)/g, '$1\n$2');
+}
 const DEMO_SITE_LABELS = new Map<string, string>([
   [DEMO_URL, 'book a meeting'],
   ...DEMO_SITES.map((site) => [site.url, site.name.toLowerCase()] as [string, string]),
@@ -296,7 +301,7 @@ function formatEmailDebug(payload: any, status: number) {
 }
 
 function renderMessageText(text: string) {
-  const lines = text.split('\n');
+  const lines = splitConcatenatedUrls(text).split('\n');
 
   const renderLine = (line: string) => {
     const nodes: React.ReactNode[] = [];
@@ -475,7 +480,7 @@ RULES:
 - NEVER say things like "I've registered", "switching stages", or "my assessment".
 - If the user asks a direct question, answer it briefly first, then ask the next relevant question.
 - Only use the product information below as the source of truth. Do not invent pricing, integrations, or promises that are not supported there.
-- If you share a demo or booking link, use the raw URL on its own line.
+- CRITICAL: Each URL MUST be on its own separate line with a newline character before it. NEVER place two URLs on the same line or adjacent without a newline between them. Correct format:\nHere are the links:\nhttps://first-link.com\nhttps://second-link.com
 - 1-3 short sentences max. Sound human, not robotic.
 
 STAGE: ${session.stage}
@@ -497,7 +502,7 @@ value_exchange -> Only use this stage once the user sounds genuinely interested 
 lead_name -> Got name. "Thanks, [Name]! What's your cell phone number?"
 lead_phone -> Got number? "Got it! And what's your email address?" Refused? "No problem - I do need at least one reliable way for our team to follow up. Would you rather share your email?"
 lead_email -> Got or skipped email. "Last thing - would you prefer our team to reach out by text, call, or email? And what time works best?"
-handoff -> Got preference and time. "Perfect, [Name]! We'll reach out by [text/call/email] around [time]. You can also check the live demos or book a meeting here." Then put each raw URL on its own line.
+handoff -> Got preference and time. "Perfect, [Name]! We'll reach out by [text/call/email] around [time]. You can also check the live demos or book a meeting here." Then output each URL on its own line separated by \\n. Never concatenate URLs together.
 complete -> Chat naturally about SubNest, setup, demos, pricing questions, and next steps.
 
 IMPORTANT:
