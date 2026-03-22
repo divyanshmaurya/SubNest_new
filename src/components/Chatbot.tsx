@@ -74,6 +74,11 @@ const CHAT_FAILURE_MESSAGE =
 const MARKDOWN_LINK_PATTERN = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g;
 const URL_PATTERN = /(https?:\/\/[^\s)]+)/g;
 
+/** Strip noise/non-speech markers (e.g. <noise>, <laugh>) from voice transcription text. */
+function stripTranscriptionNoise(text: string): string {
+  return text.replace(/<[^>]+>/g, '').replace(/\s{2,}/g, ' ').trim();
+}
+
 /** Split concatenated URLs that have no whitespace between them (e.g. "https://a.comhttps://b.com") */
 function splitConcatenatedUrls(text: string): string {
   return text.replace(/(https?:\/\/[^\s)]+?)(https?:\/\/)/g, '$1\n$2');
@@ -969,8 +974,8 @@ export default function Chatbot() {
 
             if (message.serverContent?.turnComplete) {
               const turnMessages: ChatMessage[] = [];
-              const userText = currentInputTranscription.current.trim();
-              const modelText = currentOutputTranscription.current.trim();
+              const userText = stripTranscriptionNoise(currentInputTranscription.current);
+              const modelText = stripTranscriptionNoise(currentOutputTranscription.current);
 
               if (userText) {
                 turnMessages.push(createMessage('user', userText));
