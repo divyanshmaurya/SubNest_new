@@ -950,6 +950,15 @@ export default function Chatbot() {
                         },
                       }],
                     });
+
+                    // Send updated context so the model knows the new stage/data.
+                    sessionRef.current.sendClientContent({
+                      turns: {
+                        role: 'user',
+                        parts: [{ text: `[CONTEXT UPDATE] Stage is now "${updatedSession.stage}". Session data: ${JSON.stringify(updatedSession)}. Follow the instructions for this stage only.` }],
+                      },
+                      turnComplete: false,
+                    });
                   }
                 }
               }
@@ -981,6 +990,24 @@ export default function Chatbot() {
               currentOutputTranscription.current += message.serverContent.outputTranscription.text;
             }
 
+            // Show live transcription in the chat as it streams in.
+            if (message.serverContent?.inputTranscription || message.serverContent?.outputTranscription) {
+              const liveUser = currentInputTranscription.current.trim();
+              const liveModel = currentOutputTranscription.current.trim();
+              const liveMsgs: ChatMessage[] = [];
+
+              if (liveUser) {
+                liveMsgs.push({ ...createMessage('user', liveUser), id: 'voice-user-live' });
+              }
+              if (liveModel) {
+                liveMsgs.push({ ...createMessage('model', liveModel), id: 'voice-model-live' });
+              }
+
+              if (liveMsgs.length > 0) {
+                setMessages([...messagesRef.current, ...liveMsgs]);
+              }
+            }
+
             if (message.serverContent?.turnComplete) {
               const turnMessages: ChatMessage[] = [];
               const userText = currentInputTranscription.current.trim();
@@ -998,10 +1025,8 @@ export default function Chatbot() {
                 ? [...messagesRef.current, ...turnMessages]
                 : messagesRef.current;
 
-              if (turnMessages.length > 0) {
-                messagesRef.current = nextMessages;
-                setMessages(nextMessages);
-              }
+              messagesRef.current = nextMessages;
+              setMessages(nextMessages);
 
               if (pendingLeadSessionRef.current) {
                 const readySession = pendingLeadSessionRef.current;
@@ -1015,6 +1040,8 @@ export default function Chatbot() {
 
             if (message.serverContent?.interrupted) {
               stopAudio();
+              // Clear the output buffer since this response was cut short.
+              currentOutputTranscription.current = '';
             }
           },
           onerror: (error) => {
