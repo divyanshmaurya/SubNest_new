@@ -572,7 +572,7 @@ complete -> Chat naturally about SubNest and next steps.
 
 CRITICAL:
 - The updateLeadInfo tool response will tell you the current stage. ALWAYS follow that stage, not a previous one.
-- If you already asked the question for a stage BEFORE the tool call, do NOT say it again after the tool response. Just stay quiet or say a brief filler like "Got it" and wait for the user.
+- If you already asked the question for a stage BEFORE the tool call, do NOT say it again after the tool response. Stay completely silent and produce no audio output. Do NOT say filler words like "Got it", "Okay", "Sure", etc.
 - NEVER repeat a question you already said out loud. If you hear yourself about to say the same thing twice, stop immediately.
 - NEVER produce two questions in one response. If you catch yourself about to ask a second question, stop immediately.
 - Whenever you capture or confirm a lead field or stage change, call the updateLeadInfo tool.
@@ -957,7 +957,7 @@ export default function Chatbot() {
                           result: 'success',
                           currentStage: updatedSession.stage,
                           sessionData: updatedSession,
-                          instruction: `Stage updated to "${updatedSession.stage}". IMPORTANT: If you already asked the question for this stage before calling the tool, do NOT repeat it. Just stay silent or say a very brief filler like "Got it" and wait for the user to respond. Only ask the stage question if you have not said it yet.`,
+                          instruction: `Stage updated to "${updatedSession.stage}". IMPORTANT: If you already asked the question for this stage before calling the tool, do NOT repeat it and do NOT add any filler words. Just stay completely silent and wait for the user to respond. Only ask the stage question if you have not said it yet.`,
                         },
                       }],
                     });
