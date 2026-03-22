@@ -699,12 +699,9 @@ export default function Chatbot() {
     try {
       const analysis = buildLeadAnalysis(transcript, leadSession);
       const emailResult = await sendEmail(leadSession, analysis, transcript);
-      pushMsg(
-        'model',
-        emailResult.emailed
-          ? `Perfect. I've sent your details to ${CONTACT_EMAIL}, and our team will follow up soon.`
-          : `I couldn't send the notification email. Debug: ${emailResult.debugMessage || 'No server debug returned.'}`,
-      );
+      if (!emailResult.emailed) {
+        pushMsg('model', `I couldn't send the notification email. Debug: ${emailResult.debugMessage || 'No server debug returned.'}`);
+      }
     } catch {
       pushMsg('model', `I couldn't confirm email delivery. Please try again or contact ${CONTACT_EMAIL} directly.`);
     }
