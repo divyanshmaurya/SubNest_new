@@ -74,6 +74,11 @@ const CHAT_FAILURE_MESSAGE =
   'SubNest AI could not get a response right now. Please check the Gemini API key or browser console, then try again.';
 const MARKDOWN_LINK_PATTERN = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g;
 const URL_PATTERN = /(https?:\/\/[^\s)]+)/g;
+
+/** Split concatenated URLs that have no whitespace between them (e.g. "https://a.comhttps://b.com") */
+function splitConcatenatedUrls(text: string): string {
+  return text.replace(/(https?:\/\/[^\s)]+?)(https?:\/\/)/g, '$1\n$2');
+}
 const DEMO_SITE_LABELS = new Map<string, string>([
   [DEMO_URL, 'book a meeting'],
   ...DEMO_SITES.map((site) => [site.url, site.name.toLowerCase()] as [string, string]),
@@ -300,7 +305,7 @@ function formatEmailDebug(payload: any, status: number) {
 }
 
 function renderMessageText(text: string) {
-  const lines = text.split('\n');
+  const lines = splitConcatenatedUrls(text).split('\n');
 
   const renderLine = (line: string) => {
     const nodes: React.ReactNode[] = [];
@@ -487,7 +492,7 @@ RULES:
 - NEVER say things like "I've registered", "switching stages", or "my assessment".
 - If the user asks a direct question, answer it briefly first, then ask the next relevant question.
 - Only use the product information below as the source of truth. Do not invent pricing, integrations, or promises that are not supported there.
-- If you share a demo or booking link, use the raw URL on its own line.
+- CRITICAL: Each URL MUST be on its own separate line with a newline character before it. NEVER place two URLs on the same line or adjacent without a newline between them. Correct format:\nHere are the links:\nhttps://first-link.com\nhttps://second-link.com
 - 1-3 short sentences max. Sound human, not robotic.
 
 STAGE: ${session.stage}
@@ -503,16 +508,17 @@ WHAT TO SAY (only for current stage):
 
 intent -> Figure out who they are and what they want from SubNest. If they ask what SubNest is, explain it briefly using PRODUCT_INFO, then ask whether they want SubNest for their own brokerage, landlord, or sales business, or if they are just exploring.
 core_needs -> They shared who they are. Acknowledge, then ask: "What kind of listings or clients are you focused on, and what's the main thing you'd want SubNest to help with?"
-core_needs_timeline -> They shared goals. Ask: "And what's your timeline for getting something like this live?"
-intent_specific -> They shared timeline. Ask: "Are you replacing an existing website or lead workflow, or would this be a fresh setup?"
+core_needs_timeline -> Acknowledge their goals briefly, then ask: "And what's your timeline for getting something like this live?"
+intent_specific -> Acknowledge their timeline briefly, then ask: "Are you replacing an existing website or lead workflow, or would this be a fresh setup?"
 value_exchange -> Only use this stage once the user sounds genuinely interested in a demo, pricing, setup, or follow-up. Mention the two demo sites naturally, then ask: "Can I get your name so our team can follow up with the right walkthrough?"
 lead_name -> Got name. "Thanks, [Name]! What's your cell phone number?"
 lead_phone -> Got number? "Got it! And what's your email address?" Refused? "No problem - I do need at least one reliable way for our team to follow up. Would you rather share your email?"
 lead_email -> Got or skipped email. "Last thing - would you prefer our team to reach out by text, call, or email? And what time works best?"
-handoff -> Got preference and time. "Perfect, [Name]! We'll reach out by [text/call/email] around [time]. You can also check the live demos or book a meeting here." Then put each raw URL on its own line.
+handoff -> Got preference and time. "Perfect, [Name]! We'll reach out by [text/call/email] around [time]. You can also check the live demos or book a meeting here." Then output each URL on its own line separated by \\n. Never concatenate URLs together.
 complete -> Chat naturally about SubNest, setup, demos, pricing questions, and next steps.
 
 IMPORTANT:
+- Your message must ONLY contain the question or action described for the CURRENT stage. Do NOT ask the next stage's question in advance. For example, if you are at core_needs and the user shares their goals, acknowledge briefly and set nextStage to core_needs_timeline - but do NOT ask about timeline yet. The next call will handle that.
 - Do not advance to value_exchange or later stages unless the user is clearly interested in using SubNest or wants follow-up.
 - If the user is still just asking general questions, answer them and keep next_stage at the current stage.
 
@@ -558,6 +564,7 @@ handoff -> Confirm the follow-up and mention that live demos and booking are ava
 complete -> Chat naturally about SubNest and next steps.
 
 IMPORTANT:
+- Your response must ONLY address the CURRENT stage. Do NOT ask the next stage's question in advance. Acknowledge the user's answer briefly, then stop. The next stage's question will be handled in the next turn.
 - Whenever you capture or confirm a lead field or stage change, call the updateLeadInfo tool.
 - Use the tool for new or corrected values only.
 - Do not ask for information already captured unless the user is correcting it.`;
@@ -717,12 +724,9 @@ export default function Chatbot() {
     try {
       const analysis = buildLeadAnalysis(transcript, leadSession);
       const emailResult = await sendEmail(leadSession, analysis, transcript);
-      pushMsg(
-        'model',
-        emailResult.emailed
-          ? `Perfect. I've sent your details to ${CONTACT_EMAIL}, and our team will follow up soon.`
-          : `I couldn't send the notification email. Debug: ${emailResult.debugMessage || 'No server debug returned.'}`,
-      );
+      if (!emailResult.emailed) {
+        pushMsg('model', `I couldn't send the notification email. Debug: ${emailResult.debugMessage || 'No server debug returned.'}`);
+      }
     } catch {
       pushMsg('model', `I couldn't confirm email delivery. Please try again or contact ${CONTACT_EMAIL} directly.`);
     }

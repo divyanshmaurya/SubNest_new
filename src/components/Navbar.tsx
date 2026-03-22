@@ -30,7 +30,7 @@ export default function Navbar() {
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled || mobileOpen ? 'bg-white/90 backdrop-blur-xl shadow-lg shadow-slate-900/5 border-b border-slate-100' : 'bg-transparent'}`}>
       <div className={`max-w-7xl mx-auto px-6 flex items-center justify-between transition-all duration-300 ${scrolled ? 'h-16' : 'h-20'}`}>
         <a href="#" className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-brand-blue rounded-lg flex items-center justify-center font-display font-bold text-xl text-white">S</div>
+          <img src="/logo.png" alt="SubNest" className="h-8 rounded-lg transition-all duration-300" />
           <span className={`font-display font-bold text-2xl tracking-tight transition-colors duration-300 ${scrolled ? 'text-brand-navy' : 'text-white'}`}>SUBNEST</span>
         </a>
 
