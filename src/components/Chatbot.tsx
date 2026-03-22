@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { MessageSquare, X, Send, Bot, User, Mic, RotateCcw } from 'lucide-react';
-import { GoogleGenAI, LiveServerMessage, Modality, Type } from '@google/genai';
+import { EndSensitivity, GoogleGenAI, LiveServerMessage, Modality, StartSensitivity, Type } from '@google/genai';
 import { CONTACT_EMAIL, DEMO_SITES, DEMO_URL } from '../lib/siteConfig';
 
 type ChatRole = 'user' | 'model';
@@ -1032,6 +1032,14 @@ export default function Chatbot() {
           systemInstruction: voiceSystemPrompt(sessionDataRef.current, productContextRef.current),
           inputAudioTranscription: {},
           outputAudioTranscription: {},
+          realtimeInputConfig: {
+            automaticActivityDetection: {
+              startOfSpeechSensitivity: StartSensitivity.START_SENSITIVITY_HIGH,
+              endOfSpeechSensitivity: EndSensitivity.END_SENSITIVITY_HIGH,
+              silenceDurationMs: 700,
+              prefixPaddingMs: 100,
+            },
+          },
           tools: [updateLeadInfoTool],
           speechConfig: {
             voiceConfig: {
