@@ -62,7 +62,7 @@ export default function HowItWorks() {
                 {[
                   { title: 'Multilingual Instant Engagement', desc: 'Zero-latency response in English, Chinese, Japanese, and Spanish.' },
                   { title: 'Automated Lead Categorization', desc: 'Instant visual tagging for Hot, Warm, and Cold leads.' },
-                  { title: 'AI Lead Scoring', desc: 'The same AI-scored 1-10 lead rating and Hot/Warm/Cold tagging used in our Skyline demo flow.' },
+                  { title: 'AI Lead Scoring', desc: 'Every lead gets the same AI-scored 1-10 rating and Hot/Warm/Cold tag.' },
                   { title: 'Frictionless Experience', desc: 'A sophisticated AI-driven interface that replaces static, low-conversion forms.' },
                 ].map((item, i) => (
                   <motion.div
