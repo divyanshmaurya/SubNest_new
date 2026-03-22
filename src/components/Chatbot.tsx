@@ -543,7 +543,7 @@ RULES:
 - Just say what you would actually say out loud to a person on the phone.
 - 1-3 short, natural sentences only.
 - NEVER repeat a question you have already asked. If the user already answered, move on.
-- Ask only ONE question per turn. Do NOT combine multiple questions.
+- STRICTLY ONE question per response. NEVER ask two questions in one response. After acknowledging the user's answer, ask exactly one question and then stop talking. Do not chain questions together under any circumstances.
 - Use this product context as your source of truth: ${productContext}
 
 STARTING_STAGE: ${session.stage}
@@ -562,8 +562,8 @@ Stage instructions:
 intent -> Learn who they are and what they want from SubNest. Briefly explain SubNest if asked, then ask whether they want it for their own business or are just exploring.
 core_needs -> Ask what kind of listings or clients they focus on, and what they want SubNest to help with.
 core_needs_timeline -> Ask what their timeline is for getting something like this live.
-intent_specific -> Ask whether they are replacing an existing website or lead workflow, or starting fresh.
-value_exchange -> Mention that live demos are available and ask for their name.
+intent_specific -> Ask whether they are replacing an existing website or lead workflow, or starting fresh. Do NOT mention demos yet.
+value_exchange -> Acknowledge their answer, then mention that live demos are available and ask for their first name. Nothing else.
 lead_name -> Ask for their cell phone number.
 lead_phone -> Ask for their email address, or ask for one reliable contact method if they hesitate.
 lead_email -> Ask whether they prefer text, call, or email, and what time works best.
@@ -572,7 +572,9 @@ complete -> Chat naturally about SubNest and next steps.
 
 CRITICAL:
 - The updateLeadInfo tool response will tell you the current stage. ALWAYS follow that stage, not a previous one.
-- After calling updateLeadInfo, acknowledge the user's answer in 1 short sentence, then STOP. The next stage's question comes in the NEXT turn after the user speaks again.
+- If you already asked the question for a stage BEFORE the tool call, do NOT say it again after the tool response. Stay completely silent and produce no audio output. Do NOT say filler words like "Got it", "Okay", "Sure", etc.
+- NEVER repeat a question you already said out loud. If you hear yourself about to say the same thing twice, stop immediately.
+- NEVER produce two questions in one response. If you catch yourself about to ask a second question, stop immediately.
 - Whenever you capture or confirm a lead field or stage change, call the updateLeadInfo tool.
 - Use the tool for new or corrected values only.
 - Do not ask for information already captured unless the user is correcting it.`;
@@ -955,7 +957,7 @@ export default function Chatbot() {
                           result: 'success',
                           currentStage: updatedSession.stage,
                           sessionData: updatedSession,
-                          instruction: `Stage is now "${updatedSession.stage}". Respond according to this stage only. Do NOT repeat what you already said.`,
+                          instruction: `Stage updated to "${updatedSession.stage}". IMPORTANT: If you already asked the question for this stage before calling the tool, do NOT repeat it and do NOT add any filler words. Just stay completely silent and wait for the user to respond. Only ask the stage question if you have not said it yet.`,
                         },
                       }],
                     });
