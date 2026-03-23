@@ -72,11 +72,19 @@ export default function Hero() {
           <motion.h1
             variants={fadeUp}
             transition={{ duration: 0.8, ease: [0.25, 0.4, 0.25, 1] }}
-            className="text-6xl md:text-8xl font-extrabold tracking-tight mb-10 leading-[1.05] text-white max-w-5xl mx-auto"
+            className="text-6xl md:text-8xl font-extrabold tracking-tight mb-4 leading-[1.05] text-white max-w-5xl mx-auto"
           >
-            Your leads don't wait 24 hours.{' '}<br />
-            <span className="text-gradient">Why should your reply?</span>
+            Your 24/7 AI{' '}<br />
+            <span className="text-gradient">Real Estate Co-Pilot</span>
           </motion.h1>
+
+          <motion.p
+            variants={fadeUp}
+            transition={{ duration: 0.7, ease: [0.25, 0.4, 0.25, 1] }}
+            className="text-2xl md:text-3xl font-semibold text-slate-300 mb-10 max-w-3xl mx-auto"
+          >
+            Your leads don't wait 24 hours. Why should your reply?
+          </motion.p>
 
           <motion.p
             variants={fadeUp}
