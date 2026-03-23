@@ -196,7 +196,7 @@ export default function Hero() {
               { value: "24/7", label: "Availability" },
               { value: "0ms", label: "Latency" },
               { value: "100%", label: "Lead Capture" },
-              { value: "4+", label: "Languages" },
+              { value: "40+", label: "Languages" },
             ].map((stat, i) => (
               <motion.div
                 key={i}
