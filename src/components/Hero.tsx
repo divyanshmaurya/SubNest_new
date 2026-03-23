@@ -91,19 +91,24 @@ export default function Hero() {
             transition={{ duration: 0.6, ease: [0.25, 0.4, 0.25, 1] }}
             className="flex flex-col sm:flex-row items-center justify-center gap-6"
           >
+            <motion.button
+              whileHover={{ scale: 1.04, y: -3 }}
+              whileTap={{ scale: 0.97 }}
+              onClick={() => document.getElementById('early-partner')?.scrollIntoView({ behavior: 'smooth' })}
+              className="w-full sm:w-auto px-12 py-5 bg-brand-blue text-white rounded-full font-bold text-xl shadow-2xl shadow-blue-500/25 flex items-center justify-center gap-2 transition-all hover:bg-blue-500 cursor-pointer"
+            >
+              Get Early Access — It's Free
+            </motion.button>
             <motion.a
               whileHover={{ scale: 1.04, y: -3 }}
               whileTap={{ scale: 0.97 }}
               href={DEMO_URL}
               target="_blank"
               rel="noreferrer"
-              className="w-full sm:w-auto px-12 py-5 bg-brand-blue text-white rounded-full font-bold text-xl shadow-2xl shadow-blue-500/25 flex items-center justify-center gap-2 transition-all hover:bg-blue-500"
+              className="w-full sm:w-auto px-12 py-5 bg-white/10 text-white border border-white/20 rounded-full font-bold text-xl hover:bg-white/20 transition-all backdrop-blur-sm"
             >
-              Get Early Access — It's Free
+              Book a Demo
             </motion.a>
-            <p className="text-sm text-slate-400 mt-2">
-              Free for up to 50 leads/month. No credit card required.
-            </p>
           </motion.div>
 
           <motion.div
