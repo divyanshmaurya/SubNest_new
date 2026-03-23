@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { Zap, BookOpen, CalendarCheck, BarChart3, Plug, Shield } from 'lucide-react';
+import { Zap, BookOpen, CalendarCheck, BarChart3, Globe, Shield } from 'lucide-react';
 
 const features = [
   {
@@ -24,9 +24,9 @@ const features = [
     description: 'See every conversation, lead quality score, popular questions, and conversion metrics — all in one place.',
   },
   {
-    icon: <Plug className="text-amber-500" size={28} />,
-    title: 'Plug Into Your Stack',
-    description: 'Works with your existing website, Zillow, Realtor.com, or anywhere you get leads. Embed in minutes.',
+    icon: <Globe className="text-amber-500" size={28} />,
+    title: 'Multilingual Instant Engagement',
+    description: 'Zero-latency response in 40+ languages. Never lose a lead due to language barriers.',
   },
   {
     icon: <Shield className="text-amber-500" size={28} />,
