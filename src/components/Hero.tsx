@@ -185,10 +185,10 @@ export default function Hero() {
           {/* Stats bar */}
           <div className="mt-24 grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
             {[
-              { value: "2,400+", label: "Leads handled" },
-              { value: "<30s", label: "Avg. response" },
-              { value: "350%", label: "More conversions" },
-              { value: "12h", label: "Saved per week" },
+              { value: "24/7", label: "Availability" },
+              { value: "0ms", label: "Latency" },
+              { value: "100%", label: "Lead Capture" },
+              { value: "4+", label: "Languages" },
             ].map((stat, i) => (
               <motion.div
                 key={i}
