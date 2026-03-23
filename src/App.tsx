@@ -5,7 +5,6 @@ import Hero from './components/Hero';
 import PainPoints from './components/PainPoints';
 import HowItWorks from './components/HowItWorks';
 import Features from './components/Features';
-import Testimonials from './components/Testimonials';
 import ROICalculator from './components/ROICalculator';
 import Pricing from './components/Pricing';
 import FAQ from './components/FAQ';
@@ -32,8 +31,6 @@ export default function App() {
         <PainPoints />
         <HowItWorks />
         <Features />
-        <Testimonials />
-
         <ROICalculator />
         <Pricing />
 
@@ -46,9 +43,9 @@ export default function App() {
             transition={{ duration: 0.8, ease: [0.25, 0.4, 0.25, 1] }}
             className="max-w-4xl mx-auto px-6 text-center"
           >
-            <h2 className="text-4xl md:text-6xl font-extrabold mb-8 text-brand-navy">Ready to Automate Your Hustle?</h2>
+            <h2 className="text-4xl md:text-6xl font-extrabold mb-8 text-brand-navy">Every minute without a reply is a lead choosing someone else.</h2>
             <p className="text-xl text-slate-600 mb-12">
-              Join our early partner program today and get free setup ($2,500 value). Experience the future of real estate tech.
+              Set up SubNest in 5 minutes. Start converting leads today.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <motion.a
@@ -59,7 +56,7 @@ export default function App() {
                 rel="noreferrer"
                 className="w-full sm:w-auto px-10 py-5 bg-brand-blue text-white rounded-full font-bold text-xl shadow-xl shadow-blue-200 transition-transform text-center"
               >
-                Book a Demo
+                Get Early Access — It's Free →
               </motion.a>
             </div>
           </motion.div>
