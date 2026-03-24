@@ -36,9 +36,12 @@ export default function PainPoints() {
           transition={{ duration: 0.7, ease: [0.25, 0.4, 0.25, 1] }}
           className="text-center mb-16"
         >
-          <h2 className="text-3xl md:text-5xl font-extrabold mb-6 text-brand-navy">The Real Estate Hustle is <span className="text-red-600">Broken</span></h2>
+          <div className="inline-block px-4 py-1.5 mb-6 bg-red-50 border border-red-100 rounded-full">
+            <span className="text-xs font-bold tracking-widest text-red-500 uppercase">The Problem</span>
+          </div>
+          <h2 className="text-3xl md:text-5xl font-extrabold mb-6 text-brand-navy">10 leads today. 70 by Friday. How many can you actually follow up with?</h2>
           <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-            Inbound leads expect instant gratification. When you're busy showing properties or sleeping, your business is leaking revenue.
+            Brokers and property managers lose deals every day — not because their listings are bad, but because they can't reply fast enough. The average email response time in real estate is 24 hours. By then, your lead is already talking to someone else.
           </p>
         </motion.div>
 

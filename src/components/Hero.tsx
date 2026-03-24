@@ -66,24 +66,32 @@ export default function Hero() {
             transition={{ duration: 0.7, ease: [0.25, 0.4, 0.25, 1] }}
             className="inline-block px-4 py-1.5 mb-8 bg-white/10 border border-white/20 rounded-full backdrop-blur-sm"
           >
-            <span className="text-xs font-bold tracking-widest text-blue-300 uppercase">The Future of Real Estate</span>
+            <span className="text-xs font-bold tracking-widest text-blue-300 uppercase">Now in Early Access</span>
           </motion.div>
 
           <motion.h1
             variants={fadeUp}
             transition={{ duration: 0.8, ease: [0.25, 0.4, 0.25, 1] }}
-            className="text-6xl md:text-8xl font-extrabold tracking-tight mb-10 leading-[1.05] text-white max-w-5xl mx-auto"
+            className="text-6xl md:text-8xl font-extrabold tracking-tight mb-4 leading-[1.05] text-white max-w-5xl mx-auto"
           >
-            Your 24/7 AI <br />
+            Your 24/7 AI{' '}<br />
             <span className="text-gradient">Real Estate Co-Pilot</span>
           </motion.h1>
 
           <motion.p
             variants={fadeUp}
             transition={{ duration: 0.7, ease: [0.25, 0.4, 0.25, 1] }}
+            className="text-2xl md:text-3xl font-semibold text-slate-300 mb-10 max-w-3xl mx-auto"
+          >
+            Your leads don't wait 24 hours. Why should your reply?
+          </motion.p>
+
+          <motion.p
+            variants={fadeUp}
+            transition={{ duration: 0.7, ease: [0.25, 0.4, 0.25, 1] }}
             className="text-xl md:text-2xl text-slate-400 mb-14 max-w-3xl mx-auto leading-relaxed"
           >
-            Automate lead qualification, property discovery, and showing bookings with zero latency. Built for elite agents and broker teams.
+            SubNest is an AI assistant that instantly engages every lead, answers property questions, books tours, and sends you the analytics — so no lead slips through the cracks while you're busy closing deals.
           </motion.p>
 
           <motion.div
@@ -91,24 +99,24 @@ export default function Hero() {
             transition={{ duration: 0.6, ease: [0.25, 0.4, 0.25, 1] }}
             className="flex flex-col sm:flex-row items-center justify-center gap-6"
           >
+            <motion.button
+              whileHover={{ scale: 1.04, y: -3 }}
+              whileTap={{ scale: 0.97 }}
+              onClick={() => document.getElementById('early-partner')?.scrollIntoView({ behavior: 'smooth' })}
+              className="w-full sm:w-auto px-12 py-5 bg-brand-blue text-white rounded-full font-bold text-xl shadow-2xl shadow-blue-500/25 flex items-center justify-center gap-2 transition-all hover:bg-blue-500 cursor-pointer"
+            >
+              Get Early Access — It's Free
+            </motion.button>
             <motion.a
               whileHover={{ scale: 1.04, y: -3 }}
               whileTap={{ scale: 0.97 }}
               href={DEMO_URL}
               target="_blank"
               rel="noreferrer"
-              className="w-full sm:w-auto px-12 py-5 bg-brand-blue text-white rounded-full font-bold text-xl shadow-2xl shadow-blue-500/25 flex items-center justify-center gap-2 transition-all hover:bg-blue-500"
+              className="w-full sm:w-auto px-12 py-5 bg-white/10 text-white border border-white/20 rounded-full font-bold text-xl hover:bg-white/20 transition-all backdrop-blur-sm"
             >
               Book a Demo
             </motion.a>
-            <motion.button
-              whileHover={{ scale: 1.04, y: -3 }}
-              whileTap={{ scale: 0.97 }}
-              onClick={() => document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' })}
-              className="w-full sm:w-auto px-12 py-5 bg-white/10 text-white border border-white/20 rounded-full font-bold text-xl hover:bg-white/20 transition-all backdrop-blur-sm"
-            >
-              View Pricing
-            </motion.button>
           </motion.div>
 
           <motion.div
@@ -182,13 +190,13 @@ export default function Hero() {
             </div>
           </motion.div>
 
-          {/* Animated stats */}
+          {/* Stats bar */}
           <div className="mt-24 grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
             {[
-              { label: "Availability", value: 24, suffix: "/7" },
-              { label: "Latency", value: 0, suffix: "ms" },
-              { label: "Lead Capture", value: 100, suffix: "%" },
-              { label: "Languages", value: 4, suffix: "+" }
+              { value: "24/7", label: "Availability" },
+              { value: "0ms", label: "Latency" },
+              { value: "100%", label: "Lead Capture" },
+              { value: "40+", label: "Languages" },
             ].map((stat, i) => (
               <motion.div
                 key={i}
@@ -198,9 +206,7 @@ export default function Hero() {
                 transition={{ delay: i * 0.1, duration: 0.5 }}
                 className="text-center"
               >
-                <div className="text-3xl font-extrabold text-white mb-1">
-                  <CountUp target={stat.value} suffix={stat.suffix} />
-                </div>
+                <div className="text-3xl font-extrabold font-mono text-white mb-1">{stat.value}</div>
                 <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{stat.label}</div>
               </motion.div>
             ))}

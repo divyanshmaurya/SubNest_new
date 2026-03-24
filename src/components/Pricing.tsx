@@ -176,6 +176,7 @@ export default function Pricing() {
           whileInView={{ opacity: 1, y: 0, scale: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.7, ease: [0.25, 0.4, 0.25, 1] }}
+          id="early-partner"
           className="mt-20 text-center"
         >
            <div className="inline-flex flex-col items-center gap-2">
