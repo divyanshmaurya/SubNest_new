@@ -47,26 +47,6 @@ export default function App() {
             <p className="text-xl text-slate-600 mb-12">
               Set up SubNest in 5 minutes. Start converting leads today.
             </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <motion.button
-                whileHover={{ scale: 1.05, y: -3 }}
-                whileTap={{ scale: 0.97 }}
-                onClick={() => document.getElementById('early-partner')?.scrollIntoView({ behavior: 'smooth' })}
-                className="w-full sm:w-auto px-10 py-5 bg-brand-blue text-white rounded-full font-bold text-xl shadow-xl shadow-blue-200 transition-transform text-center cursor-pointer"
-              >
-                Get Early Access — It's Free →
-              </motion.button>
-              <motion.a
-                whileHover={{ scale: 1.05, y: -3 }}
-                whileTap={{ scale: 0.97 }}
-                href={DEMO_URL}
-                target="_blank"
-                rel="noreferrer"
-                className="w-full sm:w-auto px-10 py-5 bg-white border border-slate-200 text-brand-navy rounded-full font-bold text-xl shadow-sm hover:bg-slate-50 transition-all text-center"
-              >
-                Book a Demo
-              </motion.a>
-            </div>
           </motion.div>
         </section>
 
